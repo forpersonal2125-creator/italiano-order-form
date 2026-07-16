@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Italiano - অর্ডার ফর্ম</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#f7f7f7; padding:20px; margin:0; }
+  .card { background:#fff; border-radius:10px; padding:20px; max-width:420px; margin:0 auto; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+  h2 { text-align:center; color:#c0392b; }
+  label { display:block; margin-top:14px; font-weight:bold; font-size:14px; }
+  input, textarea { width:100%; padding:10px; margin-top:6px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; font-size:15px; }
+  button { width:100%; margin-top:20px; padding:14px; background:#c0392b; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:bold; }
+  button:disabled { background:#999; }
+</style>
+</head>
+<body>
+
+<div class="card" id="formCard">
+  <h2>🍕 Italiano অর্ডার ফর্ম</h2>
+
+  <label>আপনার নাম</label>
+  <input type="text" id="name" placeholder="নাম লিখুন" required>
+
+  <label>ফোন নম্বর</label>
+  <input type="tel" id="phone" placeholder="01XXXXXXXXX" required>
+
+  <label>ডেলিভারি ঠিকানা</label>
+  <textarea id="address" placeholder="সম্পূর্ণ ঠিকানা লিখুন" required></textarea>
+
+  <label>আইটেম ও পরিমাণ</label>
+  <textarea id="items" placeholder="যেমন: ২টা চিকেন পিৎজা, ১টা কোক" required></textarea>
+
+  <label>মোট মূল্য (টাকা)</label>
+  <input type="number" id="total" placeholder="৳" required>
+
+  <button onclick="submitOrder()" id="submitBtn">✅ Confirm Order</button>
+</div>
+
+<script>
+async function submitOrder() {
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const address = document.getElementById('address').value.trim();
+  const items = document.getElementById('items').value.trim();
+  const total = document.getElementById('total').value.trim();
+
+  if (!name || !phone || !address || !items || !total) {
+    alert("সব ঘর পূরণ করুন।");
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerText = "অপেক্ষা করুন...";
+
+  const orderData = {
+    psid: new URLSearchParams(window.location.search).get('psid') || "",
+    customer_name: name,
+    phone: phone,
+    address: address,
+    items: items,
+    total: total
+  };
+
+  try {
+    const response = await fetch('https://2148-1435.n8nbysnbd.top/webhook-test/Confirmwebhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    });
+
+    if (response.ok) {
+      document.getElementById('formCard').innerHTML = "<h2>✅ অর্ডার সফলভাবে সাবমিট হয়েছে!</h2><p>ধন্যবাদ, শীঘ্রই আমরা আপনার সাথে যোগাযোগ করব।</p>";
+    } else {
+      alert("সমস্যা হয়েছে, আবার চেষ্টা করুন।");
+      btn.disabled = false;
+      btn.innerText = "✅ Confirm Order";
+    }
+  } catch (err) {
+    alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
+    btn.disabled = false;
+    btn.innerText = "✅ Confirm Order";
+  }
+}
+</script>
+
+</body>
+</html>
