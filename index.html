@@ -5,62 +5,620 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Italiano - অর্ডার ফর্ম</title>
 <style>
-  body { font-family: Arial, sans-serif; background:#f7f7f7; padding:20px; margin:0; }
-  .card { background:#fff; border-radius:10px; padding:20px; max-width:420px; margin:0 auto; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-  h2 { text-align:center; color:#c0392b; }
-  label { display:block; margin-top:14px; font-weight:bold; font-size:14px; }
-  input, textarea { width:100%; padding:10px; margin-top:6px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; font-size:15px; }
-  button { width:100%; margin-top:20px; padding:14px; background:#c0392b; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:bold; }
-  button:disabled { background:#999; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #fff5f0 0%, #ffe8dc 100%);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+  .wrapper { max-width: 480px; margin: 0 auto; }
+  .header {
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    color: #fff;
+    text-align: center;
+    padding: 32px 20px 24px;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 4px 15px rgba(192,57,43,0.3);
+  }
+  .header h1 { font-size: 24px; margin-bottom: 4px; }
+  .header p { font-size: 13px; opacity: 0.9; }
+
+  .content { padding: 16px; }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .card h3 {
+    font-size: 15px;
+    color: #c0392b;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  label { display: block; font-weight: 600; font-size: 13px; margin-top: 10px; color: #333; }
+  label:first-child { margin-top: 0; }
+  input[type="text"], input[type="tel"], input[type="number"], textarea, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fafafa;
+  }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: #e74c3c; background: #fff; }
+  textarea { resize: vertical; min-height: 60px; }
+
+  .zone-options { display: flex; gap: 10px; margin-top: 6px; }
+  .zone-option {
+    flex: 1;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.15s;
+  }
+  .zone-option.selected { border-color: #e74c3c; background: #fdf0ee; color: #c0392b; font-weight: 700; }
+  .zone-option small { display: block; font-weight: 400; color: #888; margin-top: 2px; }
+  .zone-option.selected small { color: #c0392b; }
+
+  .item-row {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: #fcfcfc;
+    position: relative;
+  }
+  .item-top-row { display: flex; align-items: center; gap: 8px; }
+  .item-number {
+    width: 22px; height: 22px;
+    background: #c0392b;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .item-name-wrap { flex: 1; position: relative; }
+  .item-name-wrap input { margin-top: 0; padding: 8px 10px; font-size: 13px; }
+  .item-row .remove-btn {
+    background: #fdecea;
+    color: #c0392b;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  .item-bottom-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding-left: 30px;
+  }
+  .qty-box { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; background: #fff; }
+  .qty-box button { width: 26px; height: 26px; border: none; background: #f5f5f5; font-size: 15px; cursor: pointer; color: #c0392b; font-weight: 700; }
+  .qty-box input { width: 32px; text-align: center; border: none; padding: 4px 0; margin: 0; font-size: 13px; }
+  .file-label {
+    font-size: 16px;
+    color: #999;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 5px 8px;
+    cursor: pointer;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .file-label.has-image { border-color: #e74c3c; color: #c0392b; }
+  .file-label input { display: none; }
+  .item-price-hint { font-size: 11px; color: #999; margin-top: 3px; padding-left: 30px; }
+  .item-price-hint.matched { color: #27ae60; }
+  .item-price-hint.offer { color: #e67e22; font-weight: 600; }
+  .item-amount {
+    margin-left: auto;
+    font-size: 13px;
+    font-weight: 700;
+    color: #c0392b;
+    white-space: nowrap;
+  }
+  .img-preview { width: 26px; height: 26px; object-fit: cover; border-radius: 5px; }
+
+  .add-item-btn {
+    width: 100%;
+    padding: 12px;
+    border: 2px dashed #e74c3c;
+    background: #fff9f8;
+    color: #c0392b;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    padding: 4px 0;
+    color: #555;
+  }
+  .total-row.grand {
+    border-top: 2px dashed #eee;
+    margin-top: 8px;
+    padding-top: 10px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #c0392b;
+  }
+
+  .payment-note {
+    background: #fff8e6;
+    border: 1px solid #f5deb3;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #8a6d3b;
+    margin-bottom: 10px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(192,57,43,0.35);
+  }
+  .submit-btn:disabled { background: #bbb; box-shadow: none; }
+
+  /* Summary Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    background: #fff;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 18px 18px 0 0;
+    padding: 20px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .modal-box h3 { color: #c0392b; margin-bottom: 12px; }
+  .summary-line { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 1px dashed #eee; }
+  .summary-line span:first-child { color: #666; }
+  .modal-buttons { display: flex; gap: 10px; margin-top: 16px; }
+  .modal-buttons button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: 700; font-size: 14px; }
+  .btn-edit { background: #eee; color: #333; }
+  .btn-confirm { background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); color: #fff; }
+
+  .success-box { text-align: center; padding: 40px 20px; }
+  .success-box .icon { font-size: 48px; }
+  .success-box h2 { color: #c0392b; margin: 10px 0; }
+
+  .error-text { color: #c0392b; font-size: 12px; margin-top: 4px; display: none; }
 </style>
 </head>
 <body>
 
-<div class="card" id="formCard">
-  <h2>🍕 Italiano অর্ডার ফর্ম</h2>
+<div class="wrapper" id="mainWrapper">
+  <div class="header">
+    <h1>🍕 Italiano</h1>
+    <p>অনলাইন অর্ডার ফর্ম</p>
+  </div>
 
-  <label>আপনার নাম</label>
-  <input type="text" id="name" placeholder="নাম লিখুন" required>
+  <div class="content">
 
-  <label>ফোন নম্বর</label>
-  <input type="tel" id="phone" placeholder="01XXXXXXXXX" required>
+    <!-- Customer Info -->
+    <div class="card">
+      <h3>👤 কাস্টমার তথ্য</h3>
+      <label>পুরো নাম</label>
+      <input type="text" id="custName" placeholder="আপনার নাম লিখুন">
 
-  <label>ডেলিভারি ঠিকানা</label>
-  <textarea id="address" placeholder="সম্পূর্ণ ঠিকানা লিখুন" required></textarea>
+      <label>ফোন নাম্বার</label>
+      <input type="tel" id="custPhone" placeholder="01XXXXXXXXX">
 
-  <label>আইটেম ও পরিমাণ</label>
-  <textarea id="items" placeholder="যেমন: ২টা চিকেন পিৎজা, ১টা কোক" required></textarea>
+      <label>ডেলিভারি ঠিকানা</label>
+      <textarea id="custAddress" placeholder="সম্পূর্ণ ঠিকানা লিখুন"></textarea>
 
-  <label>মোট মূল্য (টাকা)</label>
-  <input type="number" id="total" placeholder="৳" required>
+      <label>ডেলিভারি এলাকা</label>
+      <div class="zone-options">
+        <div class="zone-option" data-zone="inside" data-charge="100">
+          ঢাকার ভিতরে <small>+৳100</small>
+        </div>
+        <div class="zone-option" data-zone="outside" data-charge="150">
+          ঢাকার বাহিরে <small>+৳150</small>
+        </div>
+      </div>
+    </div>
 
-  <button onclick="submitOrder()" id="submitBtn">✅ Confirm Order</button>
+    <!-- Items -->
+    <div class="card">
+      <h3>🍽️ আইটেম</h3>
+      <div id="menuLoadingNote" style="display:none;font-size:12px;color:#999;margin-bottom:8px;">⏳ মেনু লোড হচ্ছে...</div>
+      <div id="itemsContainer"></div>
+      <button type="button" class="add-item-btn" id="addItemBtn">+ আরো আইটেম যোগ করুন</button>
+    </div>
+
+    <!-- Note -->
+    <div class="card">
+      <h3>📝 বিশেষ নির্দেশনা (ঐচ্ছিক)</h3>
+      <textarea id="orderNote" placeholder="যেমন: কম ঝাল দিয়েন, দরজায় কল দিয়েন না, ইত্যাদি"></textarea>
+    </div>
+
+    <!-- Totals -->
+    <div class="card">
+      <h3>🧾 মোট বিল</h3>
+      <div class="total-row"><span>আইটেম মোট</span><span id="itemsTotalDisplay">৳0</span></div>
+      <div class="total-row"><span>ডেলিভারি চার্জ</span><span id="deliveryDisplay">৳0</span></div>
+      <div class="total-row grand"><span>সর্বমোট</span><span id="grandTotalDisplay">৳0</span></div>
+    </div>
+
+    <!-- Payment -->
+    <div class="card">
+      <h3>💳 পেমেন্ট যাচাই</h3>
+      <div class="payment-note">ডেলিভারি চার্জ পাঠানোর পর, আপনি যে নাম্বার থেকে পাঠিয়েছেন তার শেষ ৪ সংখ্যা লিখুন।</div>
+      <label>শেষ ৪ সংখ্যা</label>
+      <input type="text" id="last4" maxlength="4" inputmode="numeric" placeholder="যেমন: 5564">
+      <div class="error-text" id="last4Error">সঠিক ৪ ডিজিট লিখুন</div>
+    </div>
+
+    <button type="button" class="submit-btn" id="reviewBtn">✅ অর্ডার রিভিউ করুন</button>
+  </div>
+</div>
+
+<!-- Summary Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <h3>📋 অর্ডার সামারি</h3>
+    <div id="summaryContent"></div>
+    <div class="modal-buttons">
+      <button class="btn-edit" id="editBtn">✏️ এডিট করুন</button>
+      <button class="btn-confirm" id="confirmBtn">✅ Confirm Order</button>
+    </div>
+  </div>
 </div>
 
 <script>
-async function submitOrder() {
-  const name = document.getElementById('name').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  const address = document.getElementById('address').value.trim();
-  const items = document.getElementById('items').value.trim();
-  const total = document.getElementById('total').value.trim();
+// ===== Product data: loaded live from n8n Product API =====
+const PRODUCT_API_URL = "https://2148-1435.n8nbysnbd.top/webhook-test/ProductAPI"; // <-- switch to Production URL after testing
 
-  if (!name || !phone || !address || !items || !total) {
-    alert("সব ঘর পূরণ করুন।");
+let PRODUCTS = [];
+
+function finalPrice(p) {
+  return (p.offer_price !== null && p.offer_price !== undefined && p.offer_price !== "") ? Number(p.offer_price) : Number(p.price);
+}
+
+function findProduct(input) {
+  const val = input.trim().toLowerCase();
+  if (!val) return null;
+  // 1. exact Product ID match (e.g. "IR008")
+  let match = PRODUCTS.find(p => (p.id || '').toLowerCase() === val);
+  if (match) return match;
+  // 2. exact name match
+  match = PRODUCTS.find(p => p.name.toLowerCase() === val);
+  if (match) return match;
+  // 3. partial Product ID match (e.g. typing "ir00" or "008")
+  match = PRODUCTS.find(p => (p.id || '').toLowerCase().includes(val));
+  if (match) return match;
+  // 4. keyword/name partial match
+  match = PRODUCTS.find(p => (p.keywords || '').toLowerCase().includes(val) || p.name.toLowerCase().includes(val));
+  return match || null;
+}
+
+function rebuildDatalist() {
+  let datalist = document.getElementById('productList');
+  if (!datalist) {
+    datalist = document.createElement('datalist');
+    datalist.id = 'productList';
+    document.body.appendChild(datalist);
+  }
+  datalist.innerHTML = '';
+  PRODUCTS.forEach(p => {
+    // Suggest by name
+    const optName = document.createElement('option');
+    optName.value = p.name;
+    datalist.appendChild(optName);
+    // Also suggest by Product ID, if present
+    if (p.id) {
+      const optId = document.createElement('option');
+      optId.value = p.id;
+      datalist.appendChild(optId);
+    }
+  });
+}
+
+async function loadProducts() {
+  const menuLoadingNote = document.getElementById('menuLoadingNote');
+  if (!PRODUCT_API_URL) {
+    if (menuLoadingNote) {
+      menuLoadingNote.textContent = '⚠️ মেনু লোড করা যায়নি, পরে আবার চেষ্টা করুন।';
+      menuLoadingNote.style.display = 'block';
+      menuLoadingNote.style.color = '#c0392b';
+    }
     return;
   }
+  try {
+    if (menuLoadingNote) menuLoadingNote.style.display = 'block';
+    const res = await fetch(PRODUCT_API_URL);
+    if (!res.ok) throw new Error('Bad response');
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      PRODUCTS = data.filter(p => (p.availability || '').toLowerCase() !== 'unavailable');
+      rebuildDatalist();
+      if (menuLoadingNote) menuLoadingNote.style.display = 'none';
+    } else {
+      throw new Error('Empty product list');
+    }
+  } catch (err) {
+    console.warn('Product API load failed.', err);
+    if (menuLoadingNote) {
+      menuLoadingNote.textContent = '⚠️ মেনু লোড করা যায়নি, পেজ রিফ্রেশ করে আবার চেষ্টা করুন।';
+      menuLoadingNote.style.display = 'block';
+      menuLoadingNote.style.color = '#c0392b';
+    }
+  } finally {
+    // Re-evaluate any already-typed item rows now that fresh data is in
+    document.querySelectorAll('.item-row').forEach(row => updateRowAmount(row));
+  }
+}
+rebuildDatalist();
+loadProducts();
 
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.innerText = "অপেক্ষা করুন...";
+let itemCounter = 0;
+let deliveryCharge = 0;
+let selectedZone = "";
+
+const itemsContainer = document.getElementById('itemsContainer');
+
+function addItemRow() {
+  itemCounter++;
+  const rowId = 'item_' + itemCounter;
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.id = rowId;
+  row.innerHTML = `
+    <div class="item-top-row">
+      <div class="item-number">${itemCounter}</div>
+      <div class="item-name-wrap">
+        <input type="text" class="itemName" list="productList" placeholder="প্রোডাক্ট নাম লিখুন (যেমন: broc)">
+      </div>
+      <button type="button" class="remove-btn" onclick="removeItem('${rowId}')">✕</button>
+    </div>
+    <div class="item-bottom-row">
+      <div class="qty-box">
+        <button type="button" class="qty-minus">−</button>
+        <input type="number" class="itemQty" min="1" value="1">
+        <button type="button" class="qty-plus">+</button>
+      </div>
+      <label class="file-label">
+        📷
+        <input type="file" class="itemImage" accept="image/*">
+      </label>
+      <div class="item-amount">৳0</div>
+    </div>
+    <div class="item-price-hint"></div>
+  `;
+  itemsContainer.appendChild(row);
+
+  const nameInput = row.querySelector('.itemName');
+  const qtyInput = row.querySelector('.itemQty');
+  const fileInput = row.querySelector('.itemImage');
+  const fileLabel = row.querySelector('.file-label');
+  const qtyMinus = row.querySelector('.qty-minus');
+  const qtyPlus = row.querySelector('.qty-plus');
+
+  nameInput.addEventListener('input', () => updateRowAmount(row));
+  qtyInput.addEventListener('input', () => updateRowAmount(row));
+  qtyMinus.addEventListener('click', () => {
+    qtyInput.value = Math.max(1, (parseInt(qtyInput.value) || 1) - 1);
+    updateRowAmount(row);
+  });
+  qtyPlus.addEventListener('click', () => {
+    qtyInput.value = (parseInt(qtyInput.value) || 1) + 1;
+    updateRowAmount(row);
+  });
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        row.dataset.imageBase64 = ev.target.result;
+        fileLabel.classList.add('has-image');
+        fileLabel.innerHTML = `<img class="img-preview" src="${ev.target.result}"><input type="file" class="itemImage" accept="image/*" style="display:none;">`;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  updateRowAmount(row);
+  calculateTotals();
+}
+
+function removeItem(rowId) {
+  const row = document.getElementById(rowId);
+  if (row) row.remove();
+  calculateTotals();
+}
+
+function updateRowAmount(row) {
+  const nameInput = row.querySelector('.itemName');
+  const qtyInput = row.querySelector('.itemQty');
+  const amountDiv = row.querySelector('.item-amount');
+  const hintDiv = row.querySelector('.item-price-hint');
+  const product = findProduct(nameInput.value);
+  const qty = Math.max(1, parseInt(qtyInput.value) || 1);
+
+  if (product) {
+    const price = finalPrice(product);
+    const amount = price * qty;
+    row.dataset.productId = product.id;
+    row.dataset.productName = product.name;
+    row.dataset.unitPrice = price;
+    row.dataset.amount = amount;
+    amountDiv.textContent = '৳' + amount;
+    if (product.offer_price) {
+      hintDiv.innerHTML = `✅ ${product.name} — <s>৳${product.price}</s> ৳${price} 🔥`;
+      hintDiv.className = 'item-price-hint offer';
+    } else {
+      hintDiv.textContent = `✅ ${product.name} — ৳${price} প্রতি পিস`;
+      hintDiv.className = 'item-price-hint matched';
+    }
+  } else {
+    row.dataset.productId = '';
+    row.dataset.productName = nameInput.value;
+    row.dataset.unitPrice = 0;
+    row.dataset.amount = 0;
+    amountDiv.textContent = '৳0';
+    hintDiv.textContent = nameInput.value ? '⚠️ মেনু থেকে সঠিক নাম সিলেক্ট করুন' : '';
+    hintDiv.className = 'item-price-hint';
+  }
+  calculateTotals();
+}
+
+function calculateTotals() {
+  let itemsTotal = 0;
+  document.querySelectorAll('.item-row').forEach(row => {
+    itemsTotal += Number(row.dataset.amount || 0);
+  });
+  const grandTotal = itemsTotal + deliveryCharge;
+  document.getElementById('itemsTotalDisplay').textContent = '৳' + itemsTotal;
+  document.getElementById('deliveryDisplay').textContent = '৳' + deliveryCharge;
+  document.getElementById('grandTotalDisplay').textContent = '৳' + grandTotal;
+}
+
+// Zone selection
+document.querySelectorAll('.zone-option').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.zone-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedZone = el.dataset.zone;
+    deliveryCharge = Number(el.dataset.charge);
+    calculateTotals();
+  });
+});
+
+document.getElementById('addItemBtn').addEventListener('click', addItemRow);
+addItemRow(); // start with 1 row
+
+// ===== Review / Submit =====
+const reviewBtn = document.getElementById('reviewBtn');
+const modalOverlay = document.getElementById('modalOverlay');
+const summaryContent = document.getElementById('summaryContent');
+
+reviewBtn.addEventListener('click', () => {
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+  const last4 = document.getElementById('last4').value.trim();
+  const last4Error = document.getElementById('last4Error');
+
+  let valid = true;
+  if (!name || !phone || !address) { alert('নাম, ফোন ও ঠিকানা পূরণ করুন।'); valid = false; }
+  if (!selectedZone) { alert('ডেলিভারি এলাকা সিলেক্ট করুন।'); valid = false; }
+  if (!/^\d{4}$/.test(last4)) { last4Error.style.display = 'block'; valid = false; } else { last4Error.style.display = 'none'; }
+
+  const rows = document.querySelectorAll('.item-row');
+  let hasValidItem = false;
+  rows.forEach(row => { if (row.dataset.productId) hasValidItem = true; });
+  if (!hasValidItem) { alert('অন্তত একটি সঠিক আইটেম যোগ করুন।'); valid = false; }
+
+  if (!valid) return;
+
+  // Build summary
+  let itemsHtml = '';
+  let itemsTotal = 0;
+  rows.forEach(row => {
+    if (row.dataset.productId) {
+      const qty = row.querySelector('.itemQty').value;
+      itemsHtml += `<div class="summary-line"><span>${row.dataset.productName} x${qty}</span><span>৳${row.dataset.amount}</span></div>`;
+      itemsTotal += Number(row.dataset.amount);
+    }
+  });
+  const grandTotal = itemsTotal + deliveryCharge;
+  const note = document.getElementById('orderNote').value.trim();
+
+  summaryContent.innerHTML = `
+    <div class="summary-line"><span>নাম</span><span>${name}</span></div>
+    <div class="summary-line"><span>ফোন</span><span>${phone}</span></div>
+    <div class="summary-line"><span>ঠিকানা</span><span>${address}</span></div>
+    <div class="summary-line"><span>এলাকা</span><span>${selectedZone === 'inside' ? 'ঢাকার ভিতরে' : 'ঢাকার বাহিরে'}</span></div>
+    <hr style="margin:8px 0;border:none;border-top:1px dashed #eee;">
+    ${itemsHtml}
+    <div class="summary-line"><span>ডেলিভারি চার্জ</span><span>৳${deliveryCharge}</span></div>
+    <div class="summary-line" style="font-weight:800;color:#c0392b;font-size:15px;"><span>সর্বমোট</span><span>৳${grandTotal}</span></div>
+    <div class="summary-line"><span>পেমেন্ট (শেষ ৪ ডিজিট)</span><span>${last4}</span></div>
+    ${note ? `<div class="summary-line"><span>নোট</span><span>${note}</span></div>` : ''}
+  `;
+
+  modalOverlay.classList.add('active');
+});
+
+document.getElementById('editBtn').addEventListener('click', () => {
+  modalOverlay.classList.remove('active');
+});
+
+document.getElementById('confirmBtn').addEventListener('click', async () => {
+  const confirmBtn = document.getElementById('confirmBtn');
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = 'অপেক্ষা করুন...';
+
+  const rows = document.querySelectorAll('.item-row');
+  const items = [];
+  rows.forEach(row => {
+    if (row.dataset.productId) {
+      items.push({
+        product_id: row.dataset.productId,
+        product_name: row.dataset.productName,
+        quantity: row.querySelector('.itemQty').value,
+        unit_price: row.dataset.unitPrice,
+        amount: row.dataset.amount,
+        image_base64: row.dataset.imageBase64 || ""
+      });
+    }
+  });
+
+  const itemsTotal = items.reduce((sum, i) => sum + Number(i.amount), 0);
+  const grandTotal = itemsTotal + deliveryCharge;
 
   const orderData = {
     psid: new URLSearchParams(window.location.search).get('psid') || "",
-    customer_name: name,
-    phone: phone,
-    address: address,
+    customer_name: document.getElementById('custName').value.trim(),
+    phone: document.getElementById('custPhone').value.trim(),
+    address: document.getElementById('custAddress').value.trim(),
+    delivery_zone: selectedZone,
+    delivery_charge: deliveryCharge,
     items: items,
-    total: total
+    items_total: itemsTotal,
+    grand_total: grandTotal,
+    payment_last4: document.getElementById('last4').value.trim(),
+    note: document.getElementById('orderNote').value.trim()
   };
 
   try {
@@ -71,18 +629,24 @@ async function submitOrder() {
     });
 
     if (response.ok) {
-      document.getElementById('formCard').innerHTML = "<h2>✅ অর্ডার সফলভাবে সাবমিট হয়েছে!</h2><p>ধন্যবাদ, শীঘ্রই আমরা আপনার সাথে যোগাযোগ করব।</p>";
+      document.getElementById('mainWrapper').innerHTML = `
+        <div class="success-box">
+          <div class="icon">✅</div>
+          <h2>অর্ডার সফলভাবে সাবমিট হয়েছে!</h2>
+          <p>ধন্যবাদ, শীঘ্রই আমরা আপনার সাথে যোগাযোগ করব।</p>
+        </div>`;
+      modalOverlay.classList.remove('active');
     } else {
-      alert("সমস্যা হয়েছে, আবার চেষ্টা করুন।");
-      btn.disabled = false;
-      btn.innerText = "✅ Confirm Order";
+      alert('সমস্যা হয়েছে, আবার চেষ্টা করুন।');
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = '✅ Confirm Order';
     }
   } catch (err) {
-    alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
-    btn.disabled = false;
-    btn.innerText = "✅ Confirm Order";
+    alert('নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।');
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = '✅ Confirm Order';
   }
-}
+});
 </script>
 
 </body>
