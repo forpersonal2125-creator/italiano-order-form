@@ -223,9 +223,47 @@
   .success-box h2 { color: #c0392b; margin: 10px 0; }
 
   .error-text { color: #c0392b; font-size: 12px; margin-top: 4px; display: none; }
+
+  /* Custom Toast Notification */
+  .toast-container {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    z-index: 200;
+    width: 90%;
+    max-width: 420px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .toast-container.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast-box {
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+    border-left: 4px solid #c0392b;
+  }
+  .toast-box.success { border-left-color: #27ae60; }
+  .toast-icon { font-size: 18px; flex-shrink: 0; }
+  .toast-text { font-size: 13px; color: #333; line-height: 1.4; }
 </style>
 </head>
 <body>
+
+<div class="toast-container" id="toastContainer">
+  <div class="toast-box" id="toastBox">
+    <span class="toast-icon" id="toastIcon">⚠️</span>
+    <span class="toast-text" id="toastText"></span>
+  </div>
+</div>
 
 <div class="wrapper" id="mainWrapper">
   <div class="header">
@@ -272,21 +310,21 @@
       <textarea id="orderNote" placeholder="যেমন: কম ঝাল দিয়েন, দরজায় কল দিয়েন না, ইত্যাদি"></textarea>
     </div>
 
+    <!-- Payment -->
+    <div class="card">
+      <h3>💳 ডেলিভারি পেমেন্ট যাচাই</h3>
+      <div class="payment-note">ডেলিভারি চার্জ পাঠানোর পর, আপনি যে নাম্বার থেকে পাঠিয়েছেন তার শেষ ৪ সংখ্যা লিখুন।</div>
+      <label>শেষ ৪ সংখ্যা</label>
+      <input type="text" id="last4" maxlength="4" inputmode="numeric" placeholder="যেমন: 5564">
+      <div class="error-text" id="last4Error">সঠিক ৪ ডিজিট লিখুন</div>
+    </div>
+
     <!-- Totals -->
     <div class="card">
       <h3>🧾 মোট বিল</h3>
       <div class="total-row"><span>আইটেম মোট</span><span id="itemsTotalDisplay">৳0</span></div>
       <div class="total-row"><span>ডেলিভারি চার্জ</span><span id="deliveryDisplay">৳0</span></div>
       <div class="total-row grand"><span>সর্বমোট</span><span id="grandTotalDisplay">৳0</span></div>
-    </div>
-
-    <!-- Payment -->
-    <div class="card">
-      <h3>💳 পেমেন্ট যাচাই</h3>
-      <div class="payment-note">ডেলিভারি চার্জ পাঠানোর পর, আপনি যে নাম্বার থেকে পাঠিয়েছেন তার শেষ ৪ সংখ্যা লিখুন।</div>
-      <label>শেষ ৪ সংখ্যা</label>
-      <input type="text" id="last4" maxlength="4" inputmode="numeric" placeholder="যেমন: 5564">
-      <div class="error-text" id="last4Error">সঠিক ৪ ডিজিট লিখুন</div>
     </div>
 
     <button type="button" class="submit-btn" id="reviewBtn">✅ অর্ডার রিভিউ করুন</button>
@@ -306,8 +344,32 @@
 </div>
 
 <script>
+// ===== Custom toast notification (replaces native alert()) =====
+let toastTimer = null;
+function showToast(message, type = 'error') {
+  const container = document.getElementById('toastContainer');
+  const box = document.getElementById('toastBox');
+  const icon = document.getElementById('toastIcon');
+  const text = document.getElementById('toastText');
+
+  text.textContent = message;
+  if (type === 'success') {
+    box.classList.add('success');
+    icon.textContent = '✅';
+  } else {
+    box.classList.remove('success');
+    icon.textContent = '⚠️';
+  }
+
+  container.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    container.classList.remove('show');
+  }, 3200);
+}
+
 // ===== Product data: loaded live from n8n Product API =====
-const PRODUCT_API_URL = "https://2148-1435.n8nbysnbd.top/webhook/ProductAPI"; // <-- switch to Production URL after testing
+const PRODUCT_API_URL = "https://2148-1435.n8nbysnbd.top/webhook/ProductAPI"; // Production URL
 
 let PRODUCTS = [];
 
@@ -407,7 +469,7 @@ function addItemRow() {
     <div class="item-top-row">
       <div class="item-number">${itemCounter}</div>
       <div class="item-name-wrap">
-        <input type="text" class="itemName" list="productList" placeholder="প্রোডাক্ট নাম লিখুন (যেমন: broc)">
+        <input type="text" class="itemName" list="productList" placeholder="প্রোডাক্ট নাম অথবা বারকোড লিখুন">
       </div>
       <button type="button" class="remove-btn" onclick="removeItem('${rowId}')">✕</button>
     </div>
@@ -540,14 +602,14 @@ reviewBtn.addEventListener('click', () => {
   const last4Error = document.getElementById('last4Error');
 
   let valid = true;
-  if (!name || !phone || !address) { alert('নাম, ফোন ও ঠিকানা পূরণ করুন।'); valid = false; }
-  if (!selectedZone) { alert('ডেলিভারি এলাকা সিলেক্ট করুন।'); valid = false; }
+  if (!name || !phone || !address) { showToast('নাম, ফোন ও ঠিকানা পূরণ করুন।'); valid = false; }
+  if (!selectedZone) { showToast('ডেলিভারি এলাকা সিলেক্ট করুন।'); valid = false; }
   if (!/^\d{4}$/.test(last4)) { last4Error.style.display = 'block'; valid = false; } else { last4Error.style.display = 'none'; }
 
   const rows = document.querySelectorAll('.item-row');
   let hasValidItem = false;
   rows.forEach(row => { if (row.dataset.productId) hasValidItem = true; });
-  if (!hasValidItem) { alert('অন্তত একটি সঠিক আইটেম যোগ করুন।'); valid = false; }
+  if (!hasValidItem) { showToast('অন্তত একটি সঠিক আইটেম যোগ করুন।'); valid = false; }
 
   if (!valid) return;
 
@@ -637,12 +699,12 @@ document.getElementById('confirmBtn').addEventListener('click', async () => {
         </div>`;
       modalOverlay.classList.remove('active');
     } else {
-      alert('সমস্যা হয়েছে, আবার চেষ্টা করুন।');
+      showToast('সমস্যা হয়েছে, আবার চেষ্টা করুন।');
       confirmBtn.disabled = false;
       confirmBtn.textContent = '✅ Confirm Order';
     }
   } catch (err) {
-    alert('নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।');
+    showToast('নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।');
     confirmBtn.disabled = false;
     confirmBtn.textContent = '✅ Confirm Order';
   }
