@@ -129,6 +129,7 @@
   .item-price-hint { font-size: 11px; color: #999; margin-top: 3px; padding-left: 30px; }
   .item-price-hint.matched { color: #27ae60; }
   .item-price-hint.offer { color: #e67e22; font-weight: 600; }
+  .item-price-hint.out-of-stock { color: #b33; font-weight: 600; }
   .item-amount {
     margin-left: auto;
     font-size: 13px;
@@ -432,7 +433,7 @@ async function loadProducts() {
     if (!res.ok) throw new Error('Bad response');
     const data = await res.json();
     if (Array.isArray(data) && data.length > 0) {
-      PRODUCTS = data.filter(p => (p.availability || '').toLowerCase() !== 'unavailable');
+      PRODUCTS = data;
       rebuildDatalist();
       if (menuLoadingNote) menuLoadingNote.style.display = 'none';
     } else {
@@ -536,8 +537,17 @@ function updateRowAmount(row) {
   const hintDiv = row.querySelector('.item-price-hint');
   const product = findProduct(nameInput.value);
   const qty = Math.max(1, parseInt(qtyInput.value) || 1);
+  const isOutOfStock = product && (product.availability || '').toLowerCase() === 'unavailable';
 
-  if (product) {
+  if (product && isOutOfStock) {
+    row.dataset.productId = '';
+    row.dataset.productName = product.name;
+    row.dataset.unitPrice = 0;
+    row.dataset.amount = 0;
+    amountDiv.textContent = '৳0';
+    hintDiv.innerHTML = `❌ ${product.name} — এই মুহূর্তে স্টকে নেই`;
+    hintDiv.className = 'item-price-hint out-of-stock';
+  } else if (product) {
     const price = finalPrice(product);
     const amount = price * qty;
     row.dataset.productId = product.id;
