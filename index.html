@@ -214,25 +214,8 @@
 </div>
 
 <script>
-// ---- MOCK PRODUCT DATA (আসল ভার্সনে n8n Watch Product API থেকে আসবে) ----
-const MOCK_PRODUCTS = {
-  "WT01": { name: "Watch 1", price: 2300, offer_price: null, stock: 5,
-    image: "https://res.cloudinary.com/tigkbcfb/image/upload/v1785182410/CODE_20260727_223705_0000_p8ubkj.png" },
-  "WT02": { name: "Watch 2", price: 5460, offer_price: null, stock: 8,
-    image: "https://res.cloudinary.com/tigkbcfb/image/upload/v1785182414/CODE_20260727_223827_0000_zb1exj.png" },
-  "WT03": { name: "Watch 3", price: 9520, offer_price: 5500, stock: 5,
-    image: "https://res.cloudinary.com/tigkbcfb/image/upload/v1785182413/CODE_20260727_223848_0000_emh586.png" },
-  "WT04": { name: "Watch 4", price: 2500, offer_price: null, stock: 4,
-    image: "https://res.cloudinary.com/tigkbcfb/image/upload/v1785182413/CODE_20260727_223912_0000_gzt8yb.png" },
-  "WT05": { name: "Watch 5", price: 6500, offer_price: null, stock: 6, unavailable: true,
-    image: "https://res.cloudinary.com/tigkbcfb/image/upload/v1785182409/CODE_20260727_223931_0000_bjojak.png" },
-  "WT06": { name: "Watch 6", price: 4680, offer_price: null, stock: 4,
-    image: "https://res.cloudinary.com/tigkbcfb/image/upload/v1785182410/CODE_20260727_223957_0000_uj1p4i.png" },
-  "WT07": { name: "Watch 7", price: 2550, offer_price: null, stock: 6,
-    image: "https://res.cloudinary.com/tigkbcfb/image/upload/v1785182410/CODE_20260727_224017_0000_fd1uom.png" },
-  "WT08": { name: "Watch 8", price: 5500, offer_price: null, stock: 8, unavailable: true,
-    image: "https://res.cloudinary.com/tigkbcfb/image/upload/v1785182410/CODE_20260727_224036_0000_dc2yuv.png" }
-};
+// ---- সব প্রোডাক্ট ডাটা n8n webhook (Google Sheet) থেকে সরাসরি আসে, কোনো hardcode নেই ----
+const PRODUCT_API_URL = 'https://2148-1435.n8nbysnbd.top/webhook-test/watchproductapi';
 
 let itemCount = 0;
 const items = {}; // itemId -> { code, qty, price }
@@ -295,7 +278,7 @@ function addItemCard(){
     debounceTimer = setTimeout(async () => {
       let product;
       try {
-        const res = await fetch('https://2148-1435.n8nbysnbd.top/webhook-test/watchproductapi');
+        const res = await fetch(PRODUCT_API_URL);
         const allProducts = await res.json();
         product = allProducts.find(p => p.id === code);
       } catch (err) {
