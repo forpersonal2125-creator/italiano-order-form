@@ -295,7 +295,7 @@ function addItemCard(){
     debounceTimer = setTimeout(async () => {
       let product;
       try {
-        const res = await fetch('https://2148-1435.n8nbysnbd.top/webhook-test/watchproduct api?code=' + code);
+        const res = await fetch('https://2148-1435.n8nbysnbd.top/webhook-test/watchproductapi?code=' + code);
         product = await res.json();
       } catch (err) {
         statusEl.innerHTML = '<span class="dot"></span> এরর হয়েছে, আবার চেষ্টা করো';
