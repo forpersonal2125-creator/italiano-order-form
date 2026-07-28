@@ -147,6 +147,7 @@
   /* ---- Payment verification ---- */
   .otp-input{letter-spacing:.3em;text-align:center;font-weight:700;}
   .hint{font-size:.76rem;color:var(--muted);margin-top:6px;}
+  .error-text{color:var(--danger);font-size:.72rem;margin-top:4px;display:none;}
 
   /* ---- Bill summary ---- */
   .bill-row{display:flex;justify-content:space-between;font-size:.9rem;padding:6px 0;}
@@ -156,10 +157,64 @@
     width:100%;padding:14px;border:none;border-radius:13px;background:var(--ink);color:#fff;
     font-size:.95rem;font-weight:600;margin-top:18px;cursor:pointer;
   }
+  .primary-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  /* ---- নতুন: Toast notification ---- */
+  .toast-container{
+    position:fixed;top:16px;left:50%;
+    transform:translateX(-50%) translateY(-20px);
+    z-index:200;width:90%;max-width:420px;
+    opacity:0;pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .toast-container.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast-box{
+    background:var(--card);border-radius:12px;padding:12px 14px;
+    display:flex;align-items:center;gap:10px;
+    box-shadow:0 10px 28px rgba(28,28,30,0.18);
+    border-left:4px solid var(--danger);
+  }
+  .toast-box.success{border-left-color:var(--ok);}
+  .toast-icon{font-size:18px;flex-shrink:0;}
+  .toast-text{font-size:.82rem;color:var(--ink);line-height:1.4;}
+
+  /* ---- নতুন: Summary Modal ---- */
+  .modal-overlay{
+    display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+    background:rgba(28,28,30,0.5);z-index:100;
+    align-items:flex-end;justify-content:center;
+  }
+  .modal-overlay.active{display:flex;}
+  .modal-box{
+    background:var(--card);width:100%;max-width:460px;
+    border-radius:20px 20px 0 0;padding:20px;
+    max-height:85vh;overflow-y:auto;
+  }
+  .modal-box h3{font-family:'Fraunces', serif;color:var(--accent-deep);margin-bottom:12px;font-size:1.05rem;}
+  .summary-line{display:flex;justify-content:space-between;font-size:.85rem;padding:6px 0;border-bottom:1px dashed var(--line);}
+  .summary-line span:first-child{color:var(--muted);}
+  .modal-buttons{display:flex;gap:10px;margin-top:16px;}
+  .modal-buttons button{flex:1;padding:12px;border-radius:10px;border:none;font-weight:700;font-size:.88rem;cursor:pointer;}
+  .btn-edit{background:var(--accent-soft);color:var(--ink);}
+  .btn-confirm{background:var(--ink);color:#fff;}
+  .btn-confirm:disabled{opacity:.5;cursor:not-allowed;}
+
+  .success-box{text-align:center;padding:50px 20px;}
+  .success-box .icon{font-size:48px;}
+  .success-box h2{font-family:'Fraunces', serif;color:var(--accent-deep);margin:12px 0 6px;}
+  .success-box p{color:var(--muted);font-size:.88rem;}
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<div class="toast-container" id="toastContainer">
+  <div class="toast-box" id="toastBox">
+    <span class="toast-icon" id="toastIcon">⚠️</span>
+    <span class="toast-text" id="toastText"></span>
+  </div>
+</div>
+
+<div class="wrap" id="mainWrapper">
 
   <div class="brand">
     <div style="font-size:2rem;">⌚</div>
@@ -170,13 +225,13 @@
   <div class="section-title">👤 কাস্টমার তথ্য</div>
   <div class="card">
     <label>পুরো নাম</label>
-    <input type="text" placeholder="আপনার নাম লিখুন">
+    <input type="text" id="custName" placeholder="আপনার নাম লিখুন">
 
     <label>ফোন নাম্বার</label>
-    <input type="tel" placeholder="01XXXXXXXXX">
+    <input type="tel" id="custPhone" placeholder="01XXXXXXXXX">
 
     <label>ডেলিভারি ঠিকানা</label>
-    <textarea placeholder="সম্পূর্ণ ঠিকানা লিখুন"></textarea>
+    <textarea id="custAddress" placeholder="সম্পূর্ণ ঠিকানা লিখুন"></textarea>
 
     <label>ডেলিভারি এলাকা</label>
     <div class="area-row">
@@ -191,15 +246,15 @@
 
   <div class="section-title">📝 বিশেষ নির্দেশনা (ঐচ্ছিক)</div>
   <div class="card">
-    <textarea placeholder="কোনো বিশেষ নির্দেশনা থাকলে লিখুন"></textarea>
+    <textarea id="orderNote" placeholder="কোনো বিশেষ নির্দেশনা থাকলে লিখুন"></textarea>
   </div>
 
   <div class="section-title">💳 ডেলিভারি পেমেন্ট যাচাই</div>
   <div class="card">
     <div class="hint">ডেলিভারি চার্জ পাঠানোর পর, আপনি যে নাম্বার থেকে পাঠিয়েছেন তার শেষ ৪ সংখ্যা লিখুন।</div>
     <label>শেষ ৪ সংখ্যা</label>
-    <input type="text" class="otp-input" maxlength="4" placeholder="XXXX">
-    <div class="hint">সঠিক ৪ ডিজিট লিখুন</div>
+    <input type="text" class="otp-input" id="last4" maxlength="4" placeholder="XXXX">
+    <div class="error-text" id="last4Error">সঠিক ৪ ডিজিট লিখুন</div>
   </div>
 
   <div class="section-title">🧾 মোট বিল</div>
@@ -209,11 +264,38 @@
     <div class="bill-row total"><span>সর্বমোট</span><span id="grandTotal">৳100</span></div>
   </div>
 
-  <button class="primary-btn">✅ অর্ডার রিভিউ করুন</button>
+  <button class="primary-btn" id="reviewBtn">✅ অর্ডার রিভিউ করুন</button>
 
 </div>
 
+<!-- নতুন: Summary Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <h3>📋 অর্ডার সামারি</h3>
+    <div id="summaryContent"></div>
+    <div class="modal-buttons">
+      <button class="btn-edit" id="editBtn">✏️ এডিট করুন</button>
+      <button class="btn-confirm" id="confirmBtn">✅ Confirm Order</button>
+    </div>
+  </div>
+</div>
+
 <script>
+// ===== নতুন: Custom toast notification =====
+let toastTimer = null;
+function showToast(message, type = 'error') {
+  const container = document.getElementById('toastContainer');
+  const box = document.getElementById('toastBox');
+  const icon = document.getElementById('toastIcon');
+  const text = document.getElementById('toastText');
+  text.textContent = message;
+  if (type === 'success') { box.classList.add('success'); icon.textContent = '✅'; }
+  else { box.classList.remove('success'); icon.textContent = '⚠️'; }
+  container.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => container.classList.remove('show'), 3200);
+}
+
 // ---- সব প্রোডাক্ট ডাটা n8n webhook (Google Sheet) থেকে সরাসরি আসে, কোনো hardcode নেই ----
 const PRODUCT_API_URL = 'https://2148-1435.n8nbysnbd.top/webhook/watchproductapi';
 
@@ -333,7 +415,7 @@ function showProduct(id, code, p){
 
   const qtyBlock = document.getElementById(id+'-qtyblock');
   if(available){
-    items[id] = { code, qty: 1, price: effPrice, max: p.stock };
+    items[id] = { code, qty: 1, price: effPrice, max: p.stock, name: p.name };
     qtyBlock.style.display = 'block';
     updateQtyUI(id);
   } else {
@@ -383,6 +465,119 @@ document.querySelectorAll('.area-opt').forEach(opt => {
 // প্রথম আইটেম কার্ড যোগ করা
 addItemCard();
 updateBill();
+
+// ===== নতুন: Review / Confirm ফ্লো =====
+const reviewBtn = document.getElementById('reviewBtn');
+const modalOverlay = document.getElementById('modalOverlay');
+const summaryContent = document.getElementById('summaryContent');
+let selectedZoneName = 'ঢাকার ভিতরে';
+
+reviewBtn.addEventListener('click', () => {
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+  const last4 = document.getElementById('last4').value.trim();
+  const last4Error = document.getElementById('last4Error');
+
+  let valid = true;
+  if (!name || !phone || !address) { showToast('নাম, ফোন ও ঠিকানা পূরণ করুন।'); valid = false; }
+  if (!/^\d{4}$/.test(last4)) { last4Error.style.display = 'block'; valid = false; } else { last4Error.style.display = 'none'; }
+
+  const validItems = Object.values(items).filter(it => it.code);
+  if (validItems.length === 0) { showToast('অন্তত একটি সঠিক আইটেম যোগ করুন।'); valid = false; }
+
+  if (!valid) return;
+
+  const selectedOpt = document.querySelector('.area-opt.selected');
+  selectedZoneName = selectedOpt.textContent.split('+')[0].trim();
+  const deliveryFee = Number(selectedOpt.dataset.fee);
+
+  let itemsHtml = '';
+  let itemsTotal = 0;
+  validItems.forEach(it => {
+    itemsHtml += `<div class="summary-line"><span>${it.name || it.code} x${it.qty}</span><span>৳${it.price * it.qty}</span></div>`;
+    itemsTotal += it.price * it.qty;
+  });
+  const grandTotal = itemsTotal + deliveryFee;
+  const note = document.getElementById('orderNote').value.trim();
+
+  summaryContent.innerHTML = `
+    <div class="summary-line"><span>নাম</span><span>${name}</span></div>
+    <div class="summary-line"><span>ফোন</span><span>${phone}</span></div>
+    <div class="summary-line"><span>ঠিকানা</span><span>${address}</span></div>
+    <div class="summary-line"><span>এলাকা</span><span>${selectedZoneName}</span></div>
+    <hr style="margin:8px 0;border:none;border-top:1px dashed var(--line);">
+    ${itemsHtml}
+    <div class="summary-line"><span>ডেলিভারি চার্জ</span><span>৳${deliveryFee}</span></div>
+    <div class="summary-line" style="font-weight:800;color:var(--accent-deep);font-size:1rem;"><span>সর্বমোট</span><span>৳${grandTotal}</span></div>
+    <div class="summary-line"><span>পেমেন্ট (শেষ ৪ ডিজিট)</span><span>${last4}</span></div>
+    ${note ? `<div class="summary-line"><span>নোট</span><span>${note}</span></div>` : ''}
+  `;
+
+  modalOverlay.classList.add('active');
+});
+
+document.getElementById('editBtn').addEventListener('click', () => {
+  modalOverlay.classList.remove('active');
+});
+
+document.getElementById('confirmBtn').addEventListener('click', async () => {
+  const confirmBtn = document.getElementById('confirmBtn');
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = 'অপেক্ষা করুন...';
+
+  const validItems = Object.values(items).filter(it => it.code);
+  const selectedOpt = document.querySelector('.area-opt.selected');
+  const deliveryFee = Number(selectedOpt.dataset.fee);
+  const itemsTotal = validItems.reduce((sum, it) => sum + (it.price * it.qty), 0);
+  const grandTotal = itemsTotal + deliveryFee;
+
+  const orderData = {
+    psid: new URLSearchParams(window.location.search).get('psid') || "",
+    customer_name: document.getElementById('custName').value.trim(),
+    phone: document.getElementById('custPhone').value.trim(),
+    address: document.getElementById('custAddress').value.trim(),
+    delivery_zone: selectedZoneName,
+    delivery_charge: deliveryFee,
+    items: validItems.map(it => ({
+      product_id: it.code,
+      product_name: it.name || it.code,
+      quantity: it.qty,
+      unit_price: it.price,
+      amount: it.price * it.qty
+    })),
+    items_total: itemsTotal,
+    grand_total: grandTotal,
+    payment_last4: document.getElementById('last4').value.trim(),
+    note: document.getElementById('orderNote').value.trim()
+  };
+
+  try {
+    const response = await fetch('https://2148-1435.n8nbysnbd.top/webhook-test/Confirmwebhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    });
+
+    if (response.ok) {
+      document.getElementById('mainWrapper').innerHTML = `
+        <div class="success-box">
+          <div class="icon">✅</div>
+          <h2>অর্ডার সফলভাবে সাবমিট হয়েছে!</h2>
+          <p>ধন্যবাদ, শীঘ্রই আমরা আপনার সাথে যোগাযোগ করব।</p>
+        </div>`;
+      modalOverlay.classList.remove('active');
+    } else {
+      showToast('সমস্যা হয়েছে, আবার চেষ্টা করুন।');
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = '✅ Confirm Order';
+    }
+  } catch (err) {
+    showToast('নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।');
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = '✅ Confirm Order';
+  }
+});
 </script>
 </body>
 </html>
