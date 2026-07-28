@@ -550,18 +550,23 @@ function showProduct(id, code, p){
 
   const stockWrap = document.getElementById(id+'-stock');
   const stockText = document.getElementById(id+'-stocktext');
-  const available = p.stock > 0 && !p.unavailable;
+  // ফিক্স: Sheet-এর Availability কলাম (p.availability টেক্সট: "Available"/"unavailable") এখন সত্যিকারে চেক হচ্ছে,
+  // আগে p.unavailable নামের অস্তিত্বহীন ফিল্ড চেক হতো যেটা কখনোই true হতো না
+  const availabilityText = (p.availability || '').toString().trim().toLowerCase();
+  const isMarkedAvailable = availabilityText === 'available' || availabilityText === '';
+  const stockNum = Number(p.stock) || 0;
+  const available = stockNum > 0 && isMarkedAvailable;
   if(available){
-    stockWrap.className = 'stock in'; stockText.textContent = 'স্টকে আছে';
+    stockWrap.className = 'stock in'; stockText.textContent = 'স্টকে আছে (' + stockNum + ')';
   } else {
-    stockWrap.className = 'stock out'; stockText.textContent = p.unavailable ? 'বর্তমানে অনুপলব্ধ' : 'আউট অফ স্টক';
+    stockWrap.className = 'stock out'; stockText.textContent = !isMarkedAvailable ? 'বর্তমানে অনুপলব্ধ' : 'আউট অফ স্টক';
   }
 
   document.getElementById(id+'-preview').classList.add('show');
 
   const qtyBlock = document.getElementById(id+'-qtyblock');
   if(available){
-    items[id] = { code, qty: 1, price: effPrice, max: p.stock, name: p.name, image: p.image };
+    items[id] = { code, qty: 1, price: effPrice, max: stockNum, name: p.name, image: p.image };
     qtyBlock.style.display = 'block';
     updateQtyUI(id);
   } else {
