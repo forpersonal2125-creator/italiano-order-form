@@ -147,7 +147,20 @@
   /* ---- Payment verification ---- */
   .otp-input{letter-spacing:.3em;text-align:center;font-weight:700;}
   .hint{font-size:.76rem;color:var(--muted);margin-top:6px;}
-  .error-text{color:var(--danger);font-size:.72rem;margin-top:4px;display:none;}
+
+  /* নতুন: bKash/Nagad পেমেন্ট মেথড টগল বাটন (area-opt এর সাথে হুবহু মিলিয়ে) */
+  .pay-method-row{display:flex;gap:10px;margin-top:6px;margin-bottom:14px;}
+  .pay-method-opt{
+    flex:1;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:12px 10px;
+    text-align:center;
+    font-size:.85rem;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .pay-method-opt.selected{border-color:var(--ink);background:var(--ink);color:#fff;}
 
   /* ---- Bill summary ---- */
   .bill-row{display:flex;justify-content:space-between;font-size:.9rem;padding:6px 0;}
@@ -159,7 +172,7 @@
   }
   .primary-btn:disabled{opacity:.5;cursor:not-allowed;}
 
-  /* ---- নতুন: Toast notification ---- */
+  /* ---- Toast notification ---- */
   .toast-container{
     position:fixed;top:16px;left:50%;
     transform:translateX(-50%) translateY(-20px);
@@ -178,7 +191,7 @@
   .toast-icon{font-size:18px;flex-shrink:0;}
   .toast-text{font-size:.82rem;color:var(--ink);line-height:1.4;}
 
-  /* ---- নতুন: Summary Modal ---- */
+  /* ---- Summary Modal ---- */
   .modal-overlay{
     display:none;position:fixed;top:0;left:0;right:0;bottom:0;
     background:rgba(28,28,30,0.5);z-index:100;
@@ -193,6 +206,23 @@
   .modal-box h3{font-family:'Fraunces', serif;color:var(--accent-deep);margin-bottom:12px;font-size:1.05rem;}
   .summary-line{display:flex;justify-content:space-between;font-size:.85rem;padding:6px 0;border-bottom:1px dashed var(--line);}
   .summary-line span:first-child{color:var(--muted);}
+
+  /* নতুন: Summary-তে প্রোডাক্ট ছবি কার্ড */
+  .summary-product{
+    background:var(--accent-soft);
+    border-radius:13px;
+    padding:12px;
+    margin-bottom:10px;
+    text-align:center;
+  }
+  .summary-product img{
+    width:96px;height:96px;object-fit:cover;border-radius:11px;
+    background:#e2d8c2;margin-bottom:8px;
+  }
+  .summary-product .sp-name{font-family:'Fraunces', serif;font-weight:700;font-size:1rem;color:var(--ink);}
+  .summary-product .sp-code{font-size:.72rem;color:var(--muted);margin-top:2px;letter-spacing:.03em;}
+  .summary-product .sp-qty-price{font-size:.82rem;color:var(--accent-deep);font-weight:700;margin-top:6px;}
+
   .modal-buttons{display:flex;gap:10px;margin-top:16px;}
   .modal-buttons button{flex:1;padding:12px;border-radius:10px;border:none;font-weight:700;font-size:.88rem;cursor:pointer;}
   .btn-edit{background:var(--accent-soft);color:var(--ink);}
@@ -251,10 +281,14 @@
 
   <div class="section-title">💳 ডেলিভারি পেমেন্ট যাচাই</div>
   <div class="card">
+    <div class="hint">ডেলিভারি চার্জ যে মাধ্যমে পাঠিয়েছেন সেটা সিলেক্ট করুন।</div>
+    <div class="pay-method-row">
+      <div class="pay-method-opt" data-method="bKash">bKash</div>
+      <div class="pay-method-opt" data-method="Nagad">Nagad</div>
+    </div>
     <div class="hint">ডেলিভারি চার্জ পাঠানোর পর, আপনি যে নাম্বার থেকে পাঠিয়েছেন তার শেষ ৪ সংখ্যা লিখুন।</div>
     <label>শেষ ৪ সংখ্যা</label>
     <input type="text" class="otp-input" id="last4" maxlength="4" placeholder="XXXX">
-    <div class="error-text" id="last4Error">সঠিক ৪ ডিজিট লিখুন</div>
   </div>
 
   <div class="section-title">🧾 মোট বিল</div>
@@ -268,7 +302,7 @@
 
 </div>
 
-<!-- নতুন: Summary Modal -->
+<!-- Summary Modal -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
     <h3>📋 অর্ডার সামারি</h3>
@@ -281,7 +315,73 @@
 </div>
 
 <script>
-// ===== নতুন: Custom toast notification =====
+// ===== নতুন: রিফ্রেশ দিলে ফর্ম ডাটা যেন হারিয়ে না যায় (localStorage এ অটো-সেভ/রিস্টোর) =====
+const FORM_STORAGE_KEY = 'italiano_watch_form_draft';
+
+function saveFormDraft() {
+  try {
+    const draft = {
+      custName: document.getElementById('custName')?.value || '',
+      custPhone: document.getElementById('custPhone')?.value || '',
+      custAddress: document.getElementById('custAddress')?.value || '',
+      orderNote: document.getElementById('orderNote')?.value || '',
+      last4: document.getElementById('last4')?.value || '',
+      selectedZoneFee: document.querySelector('.area-opt.selected')?.dataset.fee || '100',
+      selectedPayMethod: selectedPayMethod || '',
+      itemCodes: Array.from(document.querySelectorAll('.item-card .code-input')).map(inp => inp.value)
+    };
+    localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(draft));
+  } catch (e) { /* storage না থাকলে চুপচাপ বাদ */ }
+}
+
+function restoreFormDraft() {
+  let draft;
+  try {
+    draft = JSON.parse(localStorage.getItem(FORM_STORAGE_KEY) || 'null');
+  } catch (e) { draft = null; }
+  if (!draft) return;
+
+  if (draft.custName) document.getElementById('custName').value = draft.custName;
+  if (draft.custPhone) document.getElementById('custPhone').value = draft.custPhone;
+  if (draft.custAddress) document.getElementById('custAddress').value = draft.custAddress;
+  if (draft.orderNote) document.getElementById('orderNote').value = draft.orderNote;
+  if (draft.last4) document.getElementById('last4').value = draft.last4;
+
+  if (draft.selectedZoneFee) {
+    document.querySelectorAll('.area-opt').forEach(o => {
+      o.classList.toggle('selected', o.dataset.fee === draft.selectedZoneFee);
+    });
+  }
+  if (draft.selectedPayMethod) {
+    selectedPayMethod = draft.selectedPayMethod;
+    document.querySelectorAll('.pay-method-opt').forEach(o => {
+      o.classList.toggle('selected', o.dataset.method === draft.selectedPayMethod);
+    });
+  }
+
+  // সেভ করা আইটেম কোডগুলো ফিরিয়ে বসানো (প্রথম কার্ডে প্রথমটা, বাকিগুলোর জন্য নতুন কার্ড তৈরি)
+  if (Array.isArray(draft.itemCodes) && draft.itemCodes.length > 0) {
+    draft.itemCodes.forEach((code, idx) => {
+      if (idx > 0) addItemCard();
+    });
+    const cardEls = document.querySelectorAll('.item-card');
+    draft.itemCodes.forEach((code, idx) => {
+      const input = cardEls[idx]?.querySelector('.code-input');
+      if (input && code) {
+        input.value = code;
+        input.dispatchEvent(new Event('input'));
+      }
+    });
+  }
+
+  updateBill();
+}
+
+function clearFormDraft() {
+  try { localStorage.removeItem(FORM_STORAGE_KEY); } catch (e) {}
+}
+
+// ===== Custom toast notification =====
 let toastTimer = null;
 function showToast(message, type = 'error') {
   const container = document.getElementById('toastContainer');
@@ -299,8 +399,47 @@ function showToast(message, type = 'error') {
 // ---- সব প্রোডাক্ট ডাটা n8n webhook (Google Sheet) থেকে সরাসরি আসে, কোনো hardcode নেই ----
 const PRODUCT_API_URL = 'https://2148-1435.n8nbysnbd.top/webhook/watchproductapi';
 
+// ফিক্স ১: প্রোডাক্ট লিস্ট একবারই পেজ লোডে fetch হবে (প্রতি কি-স্ট্রোকে না) —
+// এতে "প্রথমবার পাওয়া যায়নি" ভুল মেসেজ আর আসবে না, কারণ একাধিক ওভারল্যাপিং request থাকবে না।
+let PRODUCTS = [];
+let productsLoaded = false;
+let productsLoadFailed = false;
+
+async function loadProducts() {
+  try {
+    const res = await fetch(PRODUCT_API_URL);
+    if (!res.ok) throw new Error('bad response');
+    const data = await res.json();
+    if (Array.isArray(data)) {
+      PRODUCTS = data;
+      productsLoaded = true;
+    } else {
+      throw new Error('not array');
+    }
+  } catch (err) {
+    productsLoadFailed = true;
+    console.warn('Product load failed', err);
+  } finally {
+    // ইতিমধ্যে টাইপ করা থাকলে আবার সার্চ ট্রিগার করা
+    document.querySelectorAll('.item-card').forEach(card => {
+      const input = card.querySelector('.code-input');
+      if (input && input.value.trim()) {
+        input.dispatchEvent(new Event('input'));
+      }
+    });
+  }
+}
+loadProducts();
+
+// ফিক্স ২: case-insensitive ম্যাচ — দুই দিকই lowercase করে তুলনা করা হচ্ছে
+function findProductByCode(rawInput) {
+  const val = rawInput.trim().toLowerCase();
+  if (!val) return null;
+  return PRODUCTS.find(p => (p.id || '').toLowerCase() === val) || null;
+}
+
 let itemCount = 0;
-const items = {}; // itemId -> { code, qty, price }
+const items = {}; // itemId -> { code, qty, price, name, image }
 
 function addItemCard(){
   itemCount++;
@@ -345,7 +484,7 @@ function addItemCard(){
   let debounceTimer;
   codeInput.addEventListener('input', () => {
     clearTimeout(debounceTimer);
-    const code = codeInput.value.trim().toUpperCase();
+    const rawCode = codeInput.value.trim();
     document.getElementById(id+'-preview').classList.remove('show');
     document.getElementById(id+'-qtyblock').style.display = 'none';
     const statusEl = document.getElementById(id+'-status');
@@ -353,22 +492,28 @@ function addItemCard(){
     items[id] = { code: null, qty: 1, price: 0 };
     updateBill();
 
-    if(!code) return;
+    saveFormDraft();
+
+    if(!rawCode) return;
+
+    // প্রোডাক্ট লিস্ট এখনো লোড না হলে "not found" না দেখিয়ে "লোড হচ্ছে" দেখানো —
+    // এটাই মূল ফিক্স, যাতে false "পাওয়া যায়নি" না আসে
+    if (!productsLoaded && !productsLoadFailed) {
+      statusEl.innerHTML = '<span class="dot"></span> মেনু লোড হচ্ছে, একটু অপেক্ষা করো...';
+      statusEl.className = 'status loading';
+      return;
+    }
+    if (productsLoadFailed) {
+      statusEl.innerHTML = '<span class="dot"></span> প্রোডাক্ট লোড করা যায়নি, পেজ রিফ্রেশ করো';
+      statusEl.className = 'status err';
+      return;
+    }
+
     statusEl.innerHTML = '<span class="dot"></span> খোঁজা হচ্ছে...';
     statusEl.className = 'status loading';
 
-    debounceTimer = setTimeout(async () => {
-      let product;
-      try {
-        const res = await fetch(PRODUCT_API_URL);
-        const allProducts = await res.json();
-        product = allProducts.find(p => p.id === code);
-      } catch (err) {
-        statusEl.innerHTML = '<span class="dot"></span> এরর হয়েছে, আবার চেষ্টা করো';
-        statusEl.className = 'status err';
-        return;
-      }
-
+    debounceTimer = setTimeout(() => {
+      const product = findProductByCode(rawCode);
       if(!product){
         statusEl.innerHTML = '<span class="dot"></span> এই কোডে কোনো প্রোডাক্ট পাওয়া যায়নি';
         statusEl.className = 'status err';
@@ -376,7 +521,7 @@ function addItemCard(){
       }
       statusEl.innerHTML = '<span class="dot"></span> প্রোডাক্ট পাওয়া গেছে';
       statusEl.className = 'status ok';
-      showProduct(id, code, product);
+      showProduct(id, product.id, product);
     }, 400);
   });
 
@@ -384,6 +529,7 @@ function addItemCard(){
     delete items[id];
     card.remove();
     updateBill();
+    saveFormDraft();
   });
 }
 
@@ -415,7 +561,7 @@ function showProduct(id, code, p){
 
   const qtyBlock = document.getElementById(id+'-qtyblock');
   if(available){
-    items[id] = { code, qty: 1, price: effPrice, max: p.stock, name: p.name };
+    items[id] = { code, qty: 1, price: effPrice, max: p.stock, name: p.name, image: p.image };
     qtyBlock.style.display = 'block';
     updateQtyUI(id);
   } else {
@@ -452,21 +598,39 @@ function updateBill(){
   document.getElementById('grandTotal').textContent = '৳' + (itemTotal + Number(deliveryFee));
 }
 
-document.getElementById('addItemBtn').addEventListener('click', addItemCard);
+document.getElementById('addItemBtn').addEventListener('click', () => { addItemCard(); saveFormDraft(); });
 
 document.querySelectorAll('.area-opt').forEach(opt => {
   opt.addEventListener('click', () => {
     document.querySelectorAll('.area-opt').forEach(o => o.classList.remove('selected'));
     opt.classList.add('selected');
     updateBill();
+    saveFormDraft();
   });
 });
 
-// প্রথম আইটেম কার্ড যোগ করা
+// নতুন: bKash/Nagad পেমেন্ট মেথড সিলেকশন
+let selectedPayMethod = '';
+document.querySelectorAll('.pay-method-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.pay-method-opt').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    selectedPayMethod = opt.dataset.method;
+    saveFormDraft();
+  });
+});
+
+// কাস্টমার ইনফো / নোট / last4 — প্রতি পরিবর্তনে ড্রাফট সেভ
+['custName','custPhone','custAddress','orderNote','last4'].forEach(fid => {
+  document.getElementById(fid)?.addEventListener('input', saveFormDraft);
+});
+
+// প্রথম আইটেম কার্ড যোগ করা, তারপর আগের ড্রাফট থাকলে রিস্টোর করা
 addItemCard();
+restoreFormDraft();
 updateBill();
 
-// ===== নতুন: Review / Confirm ফ্লো =====
+// ===== Review / Confirm ফ্লো =====
 const reviewBtn = document.getElementById('reviewBtn');
 const modalOverlay = document.getElementById('modalOverlay');
 const summaryContent = document.getElementById('summaryContent');
@@ -477,11 +641,11 @@ reviewBtn.addEventListener('click', () => {
   const phone = document.getElementById('custPhone').value.trim();
   const address = document.getElementById('custAddress').value.trim();
   const last4 = document.getElementById('last4').value.trim();
-  const last4Error = document.getElementById('last4Error');
 
   let valid = true;
   if (!name || !phone || !address) { showToast('নাম, ফোন ও ঠিকানা পূরণ করুন।'); valid = false; }
-  if (!/^\d{4}$/.test(last4)) { last4Error.style.display = 'block'; valid = false; } else { last4Error.style.display = 'none'; }
+  if (!selectedPayMethod) { showToast('bKash অথবা Nagad সিলেক্ট করুন।'); valid = false; }
+  if (!/^\d{4}$/.test(last4)) { showToast('সঠিক ৪ ডিজিট লিখুন।'); valid = false; }
 
   const validItems = Object.values(items).filter(it => it.code);
   if (validItems.length === 0) { showToast('অন্তত একটি সঠিক আইটেম যোগ করুন।'); valid = false; }
@@ -492,10 +656,17 @@ reviewBtn.addEventListener('click', () => {
   selectedZoneName = selectedOpt.textContent.split('+')[0].trim();
   const deliveryFee = Number(selectedOpt.dataset.fee);
 
+  // নতুন: প্রতিটা আইটেমের জন্য বড় ছবি + নিচে নাম/কোড দেখানো সামারি কার্ড
   let itemsHtml = '';
   let itemsTotal = 0;
   validItems.forEach(it => {
-    itemsHtml += `<div class="summary-line"><span>${it.name || it.code} x${it.qty}</span><span>৳${it.price * it.qty}</span></div>`;
+    itemsHtml += `
+      <div class="summary-product">
+        <img src="${it.image || ''}" alt="${it.name || it.code}">
+        <div class="sp-name">${it.name || it.code}</div>
+        <div class="sp-code">কোড: ${it.code}</div>
+        <div class="sp-qty-price">${it.qty} x ৳${it.price} = ৳${it.qty * it.price}</div>
+      </div>`;
     itemsTotal += it.price * it.qty;
   });
   const grandTotal = itemsTotal + deliveryFee;
@@ -506,11 +677,12 @@ reviewBtn.addEventListener('click', () => {
     <div class="summary-line"><span>ফোন</span><span>${phone}</span></div>
     <div class="summary-line"><span>ঠিকানা</span><span>${address}</span></div>
     <div class="summary-line"><span>এলাকা</span><span>${selectedZoneName}</span></div>
-    <hr style="margin:8px 0;border:none;border-top:1px dashed var(--line);">
+    <hr style="margin:10px 0;border:none;border-top:1px dashed var(--line);">
     ${itemsHtml}
     <div class="summary-line"><span>ডেলিভারি চার্জ</span><span>৳${deliveryFee}</span></div>
     <div class="summary-line" style="font-weight:800;color:var(--accent-deep);font-size:1rem;"><span>সর্বমোট</span><span>৳${grandTotal}</span></div>
-    <div class="summary-line"><span>পেমেন্ট (শেষ ৪ ডিজিট)</span><span>${last4}</span></div>
+    <div class="summary-line"><span>পেমেন্ট মাধ্যম</span><span>${selectedPayMethod}</span></div>
+    <div class="summary-line"><span>শেষ ৪ ডিজিট</span><span>${last4}</span></div>
     ${note ? `<div class="summary-line"><span>নোট</span><span>${note}</span></div>` : ''}
   `;
 
@@ -544,10 +716,12 @@ document.getElementById('confirmBtn').addEventListener('click', async () => {
       product_name: it.name || it.code,
       quantity: it.qty,
       unit_price: it.price,
-      amount: it.price * it.qty
+      amount: it.price * it.qty,
+      image: it.image || ""
     })),
     items_total: itemsTotal,
     grand_total: grandTotal,
+    payment_method: selectedPayMethod,
     payment_last4: document.getElementById('last4').value.trim(),
     note: document.getElementById('orderNote').value.trim()
   };
@@ -567,6 +741,7 @@ document.getElementById('confirmBtn').addEventListener('click', async () => {
           <p>ধন্যবাদ, শীঘ্রই আমরা আপনার সাথে যোগাযোগ করব।</p>
         </div>`;
       modalOverlay.classList.remove('active');
+      clearFormDraft();
     } else {
       showToast('সমস্যা হয়েছে, আবার চেষ্টা করুন।');
       confirmBtn.disabled = false;
