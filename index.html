@@ -216,8 +216,8 @@
     text-align:center;
   }
   .summary-product img{
-    width:96px;height:96px;object-fit:cover;border-radius:11px;
-    background:#e2d8c2;margin-bottom:8px;
+    width:140px;height:140px;object-fit:cover;border-radius:13px;
+    background:#e2d8c2;margin-bottom:10px;
   }
   .summary-product .sp-name{font-family:'Fraunces', serif;font-weight:700;font-size:1rem;color:var(--ink);}
   .summary-product .sp-code{font-size:.72rem;color:var(--muted);margin-top:2px;letter-spacing:.03em;}
@@ -673,12 +673,13 @@ reviewBtn.addEventListener('click', () => {
   const note = document.getElementById('orderNote').value.trim();
 
   summaryContent.innerHTML = `
+    ${itemsHtml}
+    <hr style="margin:10px 0;border:none;border-top:1px dashed var(--line);">
     <div class="summary-line"><span>নাম</span><span>${name}</span></div>
     <div class="summary-line"><span>ফোন</span><span>${phone}</span></div>
     <div class="summary-line"><span>ঠিকানা</span><span>${address}</span></div>
     <div class="summary-line"><span>এলাকা</span><span>${selectedZoneName}</span></div>
     <hr style="margin:10px 0;border:none;border-top:1px dashed var(--line);">
-    ${itemsHtml}
     <div class="summary-line"><span>ডেলিভারি চার্জ</span><span>৳${deliveryFee}</span></div>
     <div class="summary-line" style="font-weight:800;color:var(--accent-deep);font-size:1rem;"><span>সর্বমোট</span><span>৳${grandTotal}</span></div>
     <div class="summary-line"><span>পেমেন্ট মাধ্যম</span><span>${selectedPayMethod}</span></div>
