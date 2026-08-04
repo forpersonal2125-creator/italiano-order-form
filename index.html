@@ -181,6 +181,17 @@
   .stock.in{color:#059669;background:var(--ok-soft);} .stock.out{color:#dc2626;background:var(--danger-soft);}
   .stock .dot2{width:5px;height:5px;border-radius:50%;background:currentColor;}
 
+  .free-delivery-badge{
+    font-size:.68rem;font-weight:700;margin-top:6px;margin-left:6px;
+    display:inline-flex;align-items:center;gap:4px;
+    padding:3px 9px;border-radius:20px;
+    color:#059669;background:var(--ok-soft);
+    border:1px solid rgba(16,185,129,0.3);
+  }
+  .free-delivery-note{
+    font-size:.72rem;color:#059669;font-weight:600;margin-top:6px;
+  }
+
   .qty-row{display:flex;align-items:center;gap:14px;margin-top:13px;}
   .qty-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--neutral-line);background:#f8fafc;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);}
   .qty-btn:disabled{opacity:.3;cursor:not-allowed;}
@@ -531,6 +542,7 @@ function addItemCard(){
           <span class="price" id="${id}-price"></span>
         </div>
         <div class="stock" id="${id}-stock"><span class="dot2"></span><span id="${id}-stocktext"></span></div>
+        <span class="free-delivery-badge" id="${id}-freebadge" style="display:none;">🚚 ফ্রী ডেলিভারি</span>
       </div>
     </div>
 
@@ -632,9 +644,14 @@ function showProduct(id, code, p){
 
   document.getElementById(id+'-preview').classList.add('show');
 
+  // প্রোডাক্টের free_delivery ফিল্ড চেক করা (Sheet কলাম: free_delivery = yes/true হলে ফ্রী)
+  const freeDeliveryVal = (p.free_delivery ?? '').toString().trim().toLowerCase();
+  const isFreeDelivery = freeDeliveryVal === 'yes' || freeDeliveryVal === 'true' || freeDeliveryVal === '1';
+  document.getElementById(id+'-freebadge').style.display = isFreeDelivery ? 'inline-flex' : 'none';
+
   const qtyBlock = document.getElementById(id+'-qtyblock');
   if(available){
-    items[id] = { code, qty: 1, price: effPrice, max: stockNum, name: p.name, image: p.image };
+    items[id] = { code, qty: 1, price: effPrice, max: stockNum, name: p.name, image: p.image, freeDelivery: isFreeDelivery };
     qtyBlock.style.display = 'block';
     updateQtyUI(id);
   } else {
@@ -662,13 +679,20 @@ function updateQtyUI(id){
   document.getElementById(id+'-maxmsg').textContent = atMax ? 'আর স্টক নেই' : '';
 }
 
+function hasFreeDeliveryItem(){
+  return Object.values(items).some(it => it.code && it.freeDelivery);
+}
+
 function updateBill(){
   let itemTotal = 0;
   Object.values(items).forEach(it => { itemTotal += (it.price || 0) * (it.qty || 0); });
-  const deliveryFee = document.querySelector('.area-opt.selected').dataset.fee;
+  const areaFee = Number(document.querySelector('.area-opt.selected').dataset.fee);
+  const freeDelivery = hasFreeDeliveryItem();
+  const deliveryFee = freeDelivery ? 0 : areaFee;
+
   document.getElementById('itemTotal').textContent = '৳' + itemTotal;
-  document.getElementById('deliveryFee').textContent = '৳' + deliveryFee;
-  document.getElementById('grandTotal').textContent = '৳' + (itemTotal + Number(deliveryFee));
+  document.getElementById('deliveryFee').textContent = freeDelivery ? 'ফ্রী' : '৳' + deliveryFee;
+  document.getElementById('grandTotal').textContent = '৳' + (itemTotal + deliveryFee);
 }
 
 document.getElementById('addItemBtn').addEventListener('click', () => { addItemCard(); saveFormDraft(); });
@@ -727,7 +751,8 @@ reviewBtn.addEventListener('click', () => {
 
   const selectedOpt = document.querySelector('.area-opt.selected');
   selectedZoneName = selectedOpt.textContent.split('+')[0].trim();
-  const deliveryFee = Number(selectedOpt.dataset.fee);
+  const freeDelivery = hasFreeDeliveryItem();
+  const deliveryFee = freeDelivery ? 0 : Number(selectedOpt.dataset.fee);
 
   let itemsHtml = '';
   let itemsTotal = 0;
@@ -752,7 +777,7 @@ reviewBtn.addEventListener('click', () => {
     <div class="summary-line"><span>ঠিকানা</span><span>${address}</span></div>
     <div class="summary-line"><span>এলাকা</span><span>${selectedZoneName}</span></div>
     <hr style="margin:10px 0;border:none;border-top:1px dashed var(--line);">
-    <div class="summary-line"><span>ডেলিভারি চার্জ</span><span>৳${deliveryFee}</span></div>
+    <div class="summary-line"><span>ডেলিভারি চার্জ</span><span>${freeDelivery ? '<span style="color:#059669;font-weight:700;">ফ্রী 🚚</span>' : '৳' + deliveryFee}</span></div>
     <div class="summary-line" style="font-weight:800;color:#059669;font-size:1rem;"><span>সর্বমোট</span><span>৳${grandTotal}</span></div>
     <div class="summary-line"><span>পেমেন্ট মাধ্যম</span><span>${selectedPayMethod}</span></div>
     <div class="summary-line"><span>শেষ ৪ ডিজিট</span><span>${last4}</span></div>
@@ -773,7 +798,8 @@ document.getElementById('confirmBtn').addEventListener('click', async () => {
 
   const validItems = Object.values(items).filter(it => it.code);
   const selectedOpt = document.querySelector('.area-opt.selected');
-  const deliveryFee = Number(selectedOpt.dataset.fee);
+  const freeDelivery = hasFreeDeliveryItem();
+  const deliveryFee = freeDelivery ? 0 : Number(selectedOpt.dataset.fee);
   const itemsTotal = validItems.reduce((sum, it) => sum + (it.price * it.qty), 0);
   const grandTotal = itemsTotal + deliveryFee;
 
@@ -784,6 +810,7 @@ document.getElementById('confirmBtn').addEventListener('click', async () => {
     address: document.getElementById('custAddress').value.trim(),
     delivery_zone: selectedZoneName,
     delivery_charge: deliveryFee,
+    free_delivery_applied: freeDelivery,
     items: validItems.map(it => ({
       product_id: it.code,
       product_name: it.name || it.code,
