@@ -350,6 +350,7 @@
     <textarea id="orderNote" placeholder="কোনো বিশেষ নির্দেশনা থাকলে লিখুন"></textarea>
   </div>
 
+  <div id="paymentVerifySection">
   <div class="section-title">💳 ডেলিভারি পেমেন্ট যাচাই</div>
   <div class="card">
     <div class="hint">ডেলিভারি চার্জ যে মাধ্যমে পাঠিয়েছেন সেটা সিলেক্ট করুন।</div>
@@ -360,6 +361,7 @@
     <div class="hint">ডেলিভারি চার্জ পাঠানোর পর, আপনি যে নাম্বার থেকে পাঠিয়েছেন তার শেষ ৪ সংখ্যা লিখুন।</div>
     <label>শেষ ৪ সংখ্যা</label>
     <input type="text" class="otp-input" id="last4" maxlength="4" placeholder="XXXX">
+  </div>
   </div>
 
   <div class="section-title">🧾 মোট বিল</div>
@@ -693,6 +695,12 @@ function updateBill(){
   document.getElementById('itemTotal').textContent = '৳' + itemTotal;
   document.getElementById('deliveryFee').textContent = freeDelivery ? 'ফ্রী' : '৳' + deliveryFee;
   document.getElementById('grandTotal').textContent = '৳' + (itemTotal + deliveryFee);
+
+  // ডেলিভারি ফ্রী হলে পেমেন্ট যাচাই সেকশন হাইড করে দেওয়া (বিভ্রান্তি এড়াতে)
+  const payVerifySection = document.getElementById('paymentVerifySection');
+  if (payVerifySection) {
+    payVerifySection.style.display = freeDelivery ? 'none' : 'block';
+  }
 }
 
 document.getElementById('addItemBtn').addEventListener('click', () => { addItemCard(); saveFormDraft(); });
@@ -738,11 +746,14 @@ reviewBtn.addEventListener('click', () => {
   const phone = document.getElementById('custPhone').value.trim();
   const address = document.getElementById('custAddress').value.trim();
   const last4 = document.getElementById('last4').value.trim();
+  const freeDeliveryCheck = hasFreeDeliveryItem();
 
   let valid = true;
   if (!name || !phone || !address) { showToast('নাম, ফোন ও ঠিকানা পূরণ করুন।'); valid = false; }
-  if (!selectedPayMethod) { showToast('bKash অথবা Nagad সিলেক্ট করুন।'); valid = false; }
-  if (!/^\d{4}$/.test(last4)) { showToast('সঠিক ৪ ডিজিট লিখুন।'); valid = false; }
+  if (!freeDeliveryCheck) {
+    if (!selectedPayMethod) { showToast('bKash অথবা Nagad সিলেক্ট করুন।'); valid = false; }
+    if (!/^\d{4}$/.test(last4)) { showToast('সঠিক ৪ ডিজিট লিখুন।'); valid = false; }
+  }
 
   const validItems = Object.values(items).filter(it => it.code);
   if (validItems.length === 0) { showToast('অন্তত একটি সঠিক আইটেম যোগ করুন।'); valid = false; }
@@ -779,8 +790,9 @@ reviewBtn.addEventListener('click', () => {
     <hr style="margin:10px 0;border:none;border-top:1px dashed var(--line);">
     <div class="summary-line"><span>ডেলিভারি চার্জ</span><span>${freeDelivery ? '<span style="color:#059669;font-weight:700;">ফ্রী 🚚</span>' : '৳' + deliveryFee}</span></div>
     <div class="summary-line" style="font-weight:800;color:#059669;font-size:1rem;"><span>সর্বমোট</span><span>৳${grandTotal}</span></div>
+    ${!freeDelivery ? `
     <div class="summary-line"><span>পেমেন্ট মাধ্যম</span><span>${selectedPayMethod}</span></div>
-    <div class="summary-line"><span>শেষ ৪ ডিজিট</span><span>${last4}</span></div>
+    <div class="summary-line"><span>শেষ ৪ ডিজিট</span><span>${last4}</span></div>` : ''}
     ${note ? `<div class="summary-line"><span>নোট</span><span>${note}</span></div>` : ''}
   `;
 
@@ -821,8 +833,8 @@ document.getElementById('confirmBtn').addEventListener('click', async () => {
     })),
     items_total: itemsTotal,
     grand_total: grandTotal,
-    payment_method: selectedPayMethod,
-    payment_last4: document.getElementById('last4').value.trim(),
+    payment_method: freeDelivery ? '' : selectedPayMethod,
+    payment_last4: freeDelivery ? '' : document.getElementById('last4').value.trim(),
     note: document.getElementById('orderNote').value.trim()
   };
 
