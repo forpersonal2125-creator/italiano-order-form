@@ -304,6 +304,12 @@
   .success-box .icon{font-size:48px;}
   .success-box h2{font-family:'Fraunces', serif;color:var(--ink);margin:14px 0 6px;}
   .success-box p{color:var(--muted);font-size:.88rem;}
+
+  /* ---- Multi-page navigation ---- */
+  .page{display:none;}
+  .page.active{display:block;}
+  .page-buttons{display:flex;gap:10px;margin-top:20px;}
+  .page-buttons button{flex:1;padding:13px;border-radius:12px;border:none;font-weight:700;font-size:.88rem;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -323,71 +329,83 @@
     <div class="sub">অনলাইন অর্ডার ফর্ম</div>
   </div>
 
-  <div class="section-title">👤 কাস্টমার তথ্য</div>
-  <div class="card">
-    <label>পুরো নাম</label>
-    <input type="text" id="custName" placeholder="আপনার নাম লিখুন">
+  <!-- ===== Page 1: কাস্টমার তথ্য + আইটেম + নোট + বিল ===== -->
+  <div id="page1" class="page active">
 
-    <label>ফোন নাম্বার</label>
-    <input type="tel" id="custPhone" placeholder="01XXXXXXXXX">
+    <div class="section-title">👤 কাস্টমার তথ্য</div>
+    <div class="card">
+      <label>পুরো নাম</label>
+      <input type="text" id="custName" placeholder="আপনার নাম লিখুন">
 
-    <label>ডেলিভারি ঠিকানা</label>
-    <textarea id="custAddress" placeholder="সম্পূর্ণ ঠিকানা লিখুন"></textarea>
-  </div>
+      <label>ফোন নাম্বার</label>
+      <input type="tel" id="custPhone" placeholder="01XXXXXXXXX">
 
-  <div class="section-title">⌚ আইটেম</div>
-  <div id="itemsContainer"></div>
-  <button class="add-item-btn" id="addItemBtn">+ আরো আইটেম যোগ করুন</button>
-
-  <div class="section-title">📝 বিশেষ নির্দেশনা (ঐচ্ছিক)</div>
-  <div class="card">
-    <textarea id="orderNote" placeholder="কোনো বিশেষ নির্দেশনা থাকলে লিখুন"></textarea>
-  </div>
-
-  <div id="paymentVerifySection">
-  <div class="section-title">💳 ডেলিভারি পেমেন্ট যাচাই</div>
-  <div class="card">
-    <label>ডেলিভারি এলাকা</label>
-    <div class="area-row">
-      <div class="area-opt selected" data-fee="100">ঢাকার ভিতরে +৳100</div>
-      <div class="area-opt" data-fee="150">ঢাকার বাহিরে +৳150</div>
+      <label>ডেলিভারি ঠিকানা</label>
+      <textarea id="custAddress" placeholder="সম্পূর্ণ ঠিকানা লিখুন"></textarea>
     </div>
 
-    <div class="hint" style="margin-top:14px;">ডেলিভারি চার্জ যে মাধ্যমে পাঠিয়েছেন সেটা সিলেক্ট করুন।</div>
-    <div class="pay-method-row">
-      <div class="pay-method-opt" data-method="bKash">bKash</div>
-      <div class="pay-method-opt" data-method="Nagad">Nagad</div>
+    <div class="section-title">⌚ আইটেম</div>
+    <div id="itemsContainer"></div>
+    <button class="add-item-btn" id="addItemBtn">+ আরো আইটেম যোগ করুন</button>
+
+    <div class="section-title">📝 বিশেষ নির্দেশনা (ঐচ্ছিক)</div>
+    <div class="card">
+      <textarea id="orderNote" placeholder="কোনো বিশেষ নির্দেশনা থাকলে লিখুন"></textarea>
     </div>
-    <div class="hint">ডেলিভারি চার্জ পাঠানোর পর, আপনি যে নাম্বার থেকে পাঠিয়েছেন তার শেষ ৪ সংখ্যা লিখুন।</div>
-    <label>শেষ ৪ সংখ্যা</label>
-    <input type="text" class="otp-input" id="last4" maxlength="4" placeholder="XXXX">
-  </div>
-  </div>
 
-  <div class="section-title">🧾 মোট বিল</div>
-  <div class="card">
-    <div class="bill-row"><span>আইটেম মোট</span><span id="itemTotal">৳0</span></div>
-    <div class="bill-row"><span>ডেলিভারি চার্জ</span><span id="deliveryFee">৳100</span></div>
-    <div class="bill-row total"><span>সর্বমোট</span><span id="grandTotal">৳100</span></div>
+    <div class="section-title">🧾 মোট বিল</div>
+    <div class="card">
+      <div class="bill-row"><span>আইটেম মোট</span><span id="itemTotal">৳0</span></div>
+      <div class="bill-row"><span>ডেলিভারি চার্জ</span><span id="deliveryFee">৳100</span></div>
+      <div class="bill-row total"><span>সর্বমোট</span><span id="grandTotal">৳100</span></div>
+    </div>
+
+    <button class="primary-btn" id="nextBtn">পরের ধাপে যান →</button>
   </div>
 
-  <button class="primary-btn" id="reviewBtn">✅ অর্ডার রিভিউ করুন</button>
+  <!-- ===== Page 2: ডেলিভারি পেমেন্ট যাচাই (শুধু paid delivery-তে) ===== -->
+  <div id="page2" class="page">
+    <div class="section-title">💳 ডেলিভারি পেমেন্ট যাচাই</div>
+    <div class="card">
+      <label>ডেলিভারি এলাকা</label>
+      <div class="area-row">
+        <div class="area-opt selected" data-fee="100">ঢাকার ভিতরে +৳100</div>
+        <div class="area-opt" data-fee="150">ঢাকার বাহিরে +৳150</div>
+      </div>
 
-</div>
+      <div class="hint" style="margin-top:14px;">ডেলিভারি চার্জ যে মাধ্যমে পাঠিয়েছেন সেটা সিলেক্ট করুন।</div>
+      <div class="pay-method-row">
+        <div class="pay-method-opt" data-method="bKash">bKash</div>
+        <div class="pay-method-opt" data-method="Nagad">Nagad</div>
+      </div>
+      <div class="hint">ডেলিভারি চার্জ পাঠানোর পর, আপনি যে নাম্বার থেকে পাঠিয়েছেন তার শেষ ৪ সংখ্যা লিখুন।</div>
+      <label>শেষ ৪ সংখ্যা</label>
+      <input type="text" class="otp-input" id="last4" maxlength="4" placeholder="XXXX">
+    </div>
 
-<!-- Summary Modal -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal-box">
-    <h3>📋 অর্ডার সামারি</h3>
-    <div id="summaryContent"></div>
-    <div class="modal-buttons">
+    <div class="page-buttons">
+      <button class="btn-edit" id="page2BackBtn">⬅ ব্যাক এ যান</button>
+      <button class="btn-confirm" id="page2ConfirmBtn">✅ অর্ডার কনফার্ম করুন</button>
+    </div>
+  </div>
+
+  <!-- ===== Page 3: অর্ডার সামারি ===== -->
+  <div id="page3" class="page">
+    <div class="section-title">📋 অর্ডার সামারি</div>
+    <div class="card">
+      <div id="summaryContent"></div>
+    </div>
+
+    <div class="page-buttons">
       <button class="btn-edit" id="editBtn">✏️ এডিট করুন</button>
       <button class="btn-confirm" id="confirmBtn">✅ Confirm Order</button>
     </div>
   </div>
+
 </div>
 
 <script>
+
 // ===== রিফ্রেশ দিলে ফর্ম ডাটা যেন হারিয়ে না যায় (localStorage এ অটো-সেভ/রিস্টোর) =====
 const FORM_STORAGE_KEY = 'italiano_watch_form_draft';
 
@@ -695,12 +713,14 @@ function updateBill(){
   document.getElementById('itemTotal').textContent = '৳' + itemTotal;
   document.getElementById('deliveryFee').textContent = freeDelivery ? 'ফ্রী' : '৳' + deliveryFee;
   document.getElementById('grandTotal').textContent = '৳' + (itemTotal + deliveryFee);
+}
 
-  // ডেলিভারি ফ্রী হলে পেমেন্ট যাচাই সেকশন হাইড করে দেওয়া (বিভ্রান্তি এড়াতে)
-  const payVerifySection = document.getElementById('paymentVerifySection');
-  if (payVerifySection) {
-    payVerifySection.style.display = freeDelivery ? 'none' : 'block';
-  }
+// ===== Multi-page নেভিগেশন =====
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(pageId);
+  if (target) target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 document.getElementById('addItemBtn').addEventListener('click', () => { addItemCard(); saveFormDraft(); });
@@ -735,36 +755,25 @@ addItemCard();
 restoreFormDraft();
 updateBill();
 
-// ===== Review / Confirm ফ্লো =====
-const reviewBtn = document.getElementById('reviewBtn');
-const modalOverlay = document.getElementById('modalOverlay');
+// ===== Page navigation / Review / Confirm ফ্লো =====
+const nextBtn = document.getElementById('nextBtn');
+const page2BackBtn = document.getElementById('page2BackBtn');
+const page2ConfirmBtn = document.getElementById('page2ConfirmBtn');
 const summaryContent = document.getElementById('summaryContent');
 let selectedZoneName = 'ঢাকার ভিতরে';
 
-reviewBtn.addEventListener('click', () => {
+function buildSummaryAndShowPage3() {
   const name = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
   const address = document.getElementById('custAddress').value.trim();
   const last4 = document.getElementById('last4').value.trim();
-  const freeDeliveryCheck = hasFreeDeliveryItem();
-
-  let valid = true;
-  if (!name || !phone || !address) { showToast('নাম, ফোন ও ঠিকানা পূরণ করুন।'); valid = false; }
-  if (!freeDeliveryCheck) {
-    if (!selectedPayMethod) { showToast('bKash অথবা Nagad সিলেক্ট করুন।'); valid = false; }
-    if (!/^\d{4}$/.test(last4)) { showToast('সঠিক ৪ ডিজিট লিখুন।'); valid = false; }
-  }
-
-  const validItems = Object.values(items).filter(it => it.code);
-  if (validItems.length === 0) { showToast('অন্তত একটি সঠিক আইটেম যোগ করুন।'); valid = false; }
-
-  if (!valid) return;
 
   const selectedOpt = document.querySelector('.area-opt.selected');
   selectedZoneName = selectedOpt.textContent.split('+')[0].trim();
   const freeDelivery = hasFreeDeliveryItem();
   const deliveryFee = freeDelivery ? 0 : Number(selectedOpt.dataset.fee);
 
+  const validItems = Object.values(items).filter(it => it.code);
   let itemsHtml = '';
   let itemsTotal = 0;
   validItems.forEach(it => {
@@ -796,11 +805,52 @@ reviewBtn.addEventListener('click', () => {
     ${note ? `<div class="summary-line"><span>নোট</span><span>${note}</span></div>` : ''}
   `;
 
-  modalOverlay.classList.add('active');
+  showPage('page3');
+}
+
+// Page 1 -> "পরের ধাপে যান": নাম/ফোন/ঠিকানা/আইটেম যাচাই করে, ফ্রী ডেলিভারি হলে সরাসরি Page 3 (সামারি),
+// নাহলে Page 2 (পেমেন্ট যাচাই)-এ নিয়ে যাবে
+nextBtn.addEventListener('click', () => {
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+
+  let valid = true;
+  if (!name || !phone || !address) { showToast('নাম, ফোন ও ঠিকানা পূরণ করুন।'); valid = false; }
+
+  const validItems = Object.values(items).filter(it => it.code);
+  if (validItems.length === 0) { showToast('অন্তত একটি সঠিক আইটেম যোগ করুন।'); valid = false; }
+
+  if (!valid) return;
+
+  if (hasFreeDeliveryItem()) {
+    buildSummaryAndShowPage3();
+  } else {
+    showPage('page2');
+  }
 });
 
+// Page 2 -> ব্যাক: Page 1-এ ফিরে যাওয়া
+page2BackBtn.addEventListener('click', () => {
+  showPage('page1');
+});
+
+// Page 2 -> অর্ডার কনফার্ম করুন: bKash/Nagad ও শেষ ৪ ডিজিট যাচাই করে Page 3 (সামারি)-তে যাওয়া
+page2ConfirmBtn.addEventListener('click', () => {
+  const last4 = document.getElementById('last4').value.trim();
+
+  let valid = true;
+  if (!selectedPayMethod) { showToast('bKash অথবা Nagad সিলেক্ট করুন।'); valid = false; }
+  if (!/^\d{4}$/.test(last4)) { showToast('সঠিক ৪ ডিজিট লিখুন।'); valid = false; }
+
+  if (!valid) return;
+
+  buildSummaryAndShowPage3();
+});
+
+// Page 3 -> এডিট করুন: ফ্রী ডেলিভারি হলে Page 1-এ, নাহলে Page 2-তে ফিরিয়ে নেওয়া
 document.getElementById('editBtn').addEventListener('click', () => {
-  modalOverlay.classList.remove('active');
+  showPage(hasFreeDeliveryItem() ? 'page1' : 'page2');
 });
 
 document.getElementById('confirmBtn').addEventListener('click', async () => {
@@ -852,7 +902,6 @@ document.getElementById('confirmBtn').addEventListener('click', async () => {
           <h2>অর্ডার সফলভাবে সাবমিট হয়েছে!</h2>
           <p>ধন্যবাদ, শীঘ্রই আমরা আপনার সাথে যোগাযোগ করব।</p>
         </div>`;
-      modalOverlay.classList.remove('active');
       clearFormDraft();
     } else {
       showToast('সমস্যা হয়েছে, আবার চেষ্টা করুন।');
