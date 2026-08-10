@@ -2,7 +2,7 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Italiano - ওয়াচ অর্ডার ফর্ম</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
@@ -32,6 +32,7 @@
     --dark-panel-2:#1e293b;
   }
   *{box-sizing:border-box;}
+  html{ height:100%; }
   body{
     margin:0;
     background:
@@ -41,6 +42,7 @@
     color:var(--ink);
     padding:28px 16px 76px;
     min-height:100vh;
+    min-height:100dvh;
   }
   .wrap{max-width:460px;margin:0 auto;}
 
@@ -99,11 +101,13 @@
     padding:12px 14px;
     border:1px solid var(--neutral-line);
     border-radius:12px;
-    font-size:.95rem;
+    font-size:16px;
     font-family:inherit;
     background:#f8fafc;
     outline:none;
     color:var(--ink);
+    -webkit-text-fill-color:var(--ink);
+    opacity:1;
   }
   input::placeholder, textarea::placeholder{color:#94a3b8;}
   input:focus, textarea:focus, select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(16,185,129,0.15);background:#ffffff;}
@@ -145,6 +149,7 @@
     background:rgba(255,255,255,0.06);
     border:1px solid rgba(255,255,255,0.12);
     color:#f8fafc;
+    -webkit-text-fill-color:#f8fafc;
   }
   .item-card input[type=text]::placeholder{color:#64748b;}
   .item-card input[type=text]:focus{background:rgba(255,255,255,0.09);}
@@ -345,6 +350,7 @@
     </div>
 
     <div class="section-title">⌚ আইটেম</div>
+    <div class="hint" style="margin-bottom:14px;font-size:.86rem;line-height:1.5;color:#059669;font-weight:600;">আপনার পছন্দের প্রোডাক্টটি খুঁজে পেতে প্রোডাক্টের কোডটি লিখুন। সঠিক প্রোডাক্টটি পাওয়া জন্য।</div>
     <div id="itemsContainer"></div>
     <button class="add-item-btn" id="addItemBtn">+ আরো আইটেম যোগ করুন</button>
 
@@ -398,6 +404,34 @@
 </div>
 
 <script>
+
+// ===== FIX #1: Messenger in-app browser (webview)-এ টাইপ করার সময় input দেখা যাচ্ছিল না =====
+// কারণ: webview-তে কীবোর্ড উঠলে viewport height বদলায়, কিন্তু ফোকাস করা input
+// সবসময় সেই visible অংশে auto-scroll হয় না। visualViewport API দিয়ে কীবোর্ড
+// উঠলে/সাইজ বদলালে ফোকাসড ইনপুটকে visible viewport-এর মধ্যে স্ক্রল করে আনা হচ্ছে।
+(function () {
+  function scrollFocusedIntoView() {
+    const el = document.activeElement;
+    if (!el) return;
+    const tag = el.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') {
+      setTimeout(() => {
+        el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }, 80);
+    }
+  }
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', scrollFocusedIntoView);
+  }
+
+  document.addEventListener('focusin', (e) => {
+    const tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') {
+      scrollFocusedIntoView();
+    }
+  });
+})();
 
 // ===== রিফ্রেশ দিলে ফর্ম ডাটা যেন হারিয়ে না যায় (localStorage এ অটো-সেভ/রিস্টোর) =====
 const FORM_STORAGE_KEY = 'italiano_watch_form_draft';
@@ -650,7 +684,9 @@ function showProduct(id, code, p){
   const stockNum = Number(p.stock) || 0;
   const available = stockNum > 0 && isMarkedAvailable;
   if(available){
-    stockWrap.className = 'stock in'; stockText.textContent = 'স্টকে আছে (' + stockNum + ')';
+    // FIX #2: কাস্টমারকে exact stock সংখ্যা দেখানো হচ্ছিল ("স্টকে আছে (৩)")।
+    // এখন শুধু "স্টকে আছে" দেখানো হচ্ছে, সংখ্যাটা internal max হিসেবে items[id].max-এ থেকে যাচ্ছে।
+    stockWrap.className = 'stock in'; stockText.textContent = 'স্টকে আছে';
   } else {
     stockWrap.className = 'stock out'; stockText.textContent = !isMarkedAvailable ? 'বর্তমানে অনুপলব্ধ' : 'আউট অফ স্টক';
   }
@@ -689,7 +725,13 @@ function updateQtyUI(id){
   const atMax = it.qty >= it.max;
   document.getElementById(id+'-plus').disabled = atMax;
   document.getElementById(id+'-minus').disabled = it.qty <= 1;
-  document.getElementById(id+'-maxmsg').textContent = atMax ? 'আর স্টক নেই' : '';
+  // FIX #3: "আর স্টক নেই" মেসেজ বিভ্রান্তিকর ছিল — মনে হতো হাতে থাকা পরিমাণটাও নেই।
+  // max=1 (একদম শেষ পিচ) হলে আলাদা মেসেজ, আর ১-এর বেশি হলে সর্বোচ্চ পরিমাণের মেসেজ।
+  let maxMsg = '';
+  if (atMax) {
+    maxMsg = (it.max === 1) ? 'এটাই শেষ পিচ, আর নেই' : 'সর্বোচ্চ এই পরিমাণ অর্ডার করা যাবে';
+  }
+  document.getElementById(id+'-maxmsg').textContent = maxMsg;
 }
 
 function hasFreeDeliveryItem(){
