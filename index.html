@@ -313,6 +313,7 @@
   /* ---- Multi-page navigation ---- */
   .page{display:none;}
   .page.active{display:block;}
+  #page2.page.active{padding-bottom:76px;}
   .page-buttons{display:flex;gap:10px;margin-top:20px;}
   .page-buttons button{flex:1;padding:13px;border-radius:12px;border:none;font-weight:700;font-size:.88rem;cursor:pointer;}
 </style>
@@ -405,31 +406,69 @@
 
 <script>
 
-// ===== FIX #1: Messenger in-app browser (webview)-এ টাইপ করার সময় input দেখা যাচ্ছিল না =====
-// কারণ: webview-তে কীবোর্ড উঠলে viewport height বদলায়, কিন্তু ফোকাস করা input
-// সবসময় সেই visible অংশে auto-scroll হয় না। visualViewport API দিয়ে কীবোর্ড
-// উঠলে/সাইজ বদলালে ফোকাসড ইনপুটকে visible viewport-এর মধ্যে স্ক্রল করে আনা হচ্ছে।
+// ===== FIX #1: Messenger in-app browser (webview)-এ কীবোর্ড উঠলে input field
+// কীবোর্ডের নিচে চাপা পড়ে যাচ্ছিল, কিছুই দেখা যাচ্ছিল না =====
+// কারণ: এই webview-তে কীবোর্ড ওঠার সময় visualViewport ইভেন্ট দেরিতে/অনির্ভরযোগ্যভাবে ফায়ার হয়,
+// আর page-এ কীবোর্ডের সমান extra স্ক্রল-স্পেসও থাকে না। তাই এখানে:
+// ১) কীবোর্ডের height অনুযায়ী body-র নিচে অস্থায়ী padding যোগ করা হচ্ছে, যাতে scroll করার জায়গা তৈরি হয়।
+// ২) ফোকাসের পর একাধিকবার (repeated/delayed) scrollIntoView চেষ্টা করা হচ্ছে, কারণ webview অনেক সময়
+//    ইভেন্ট দেরিতে পাঠায়।
 (function () {
+  let extraPadding = 0;
+
+  function applyKeyboardPadding() {
+    if (!window.visualViewport) return;
+    const kbHeight = Math.max(0, window.innerHeight - window.visualViewport.height);
+    if (kbHeight > 60) {
+      extraPadding = kbHeight;
+      document.body.style.paddingBottom = (kbHeight + 40) + 'px';
+    } else {
+      extraPadding = 0;
+      document.body.style.paddingBottom = '';
+    }
+  }
+
   function scrollFocusedIntoView() {
     const el = document.activeElement;
     if (!el) return;
     const tag = el.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA') {
+    if (tag !== 'INPUT' && tag !== 'TEXTAREA') return;
+
+    // একাধিকবার চেষ্টা করা, যেহেতু webview কীবোর্ড অ্যানিমেশন শেষ হতে দেরি করতে পারে
+    [50, 150, 300, 500, 800].forEach(delay => {
       setTimeout(() => {
+        if (document.activeElement !== el) return;
+        applyKeyboardPadding();
         el.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      }, 80);
-    }
+      }, delay);
+    });
   }
 
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', scrollFocusedIntoView);
+    window.visualViewport.addEventListener('resize', () => {
+      applyKeyboardPadding();
+      scrollFocusedIntoView();
+    });
   }
+  // fallback: কিছু in-app webview visualViewport সাপোর্ট করে না, তখন window resize ব্যবহার
+  window.addEventListener('resize', scrollFocusedIntoView);
 
   document.addEventListener('focusin', (e) => {
     const tag = e.target.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA') {
       scrollFocusedIntoView();
     }
+  });
+
+  document.addEventListener('focusout', () => {
+    setTimeout(() => {
+      const active = document.activeElement;
+      const stillTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+      if (!stillTyping) {
+        document.body.style.paddingBottom = '';
+        extraPadding = 0;
+      }
+    }, 200);
   });
 })();
 
