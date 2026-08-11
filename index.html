@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-<title>Italiano - ওয়াচ অর্ডার ফর্ম</title>
+<title>অর্ডার ফর্ম</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
 
@@ -126,9 +126,16 @@
     cursor:pointer;
     background:var(--danger-soft);
     color:#dc2626;
-    transition:background .15s ease, border-color .15s ease, color .15s ease;
+    transition:background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
-  .area-opt.selected{border-color:rgba(16,185,129,0.4);background:var(--ok-soft);color:#059669;}
+  .area-opt.selected{
+    border-color:transparent;
+    background:linear-gradient(135deg,#10b981,#059669);
+    color:#ffffff;
+    box-shadow:0 6px 16px -4px rgba(5,150,105,0.5);
+    transform:scale(1.03);
+  }
+  .area-opt.selected::before{content:"✓ ";}
 
   /* ---- Item / Product section (Watch-specific) ---- */
   .item-card{
@@ -151,7 +158,22 @@
     color:#f8fafc;
     -webkit-text-fill-color:#f8fafc;
   }
-  .item-card input[type=text]::placeholder{color:#64748b;}
+  .item-card input[type=text]::placeholder{
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:#64748b;
+    -webkit-text-fill-color:#64748b;
+    opacity:1;
+  }
+  /* প্রোডাক্ট কোড লেবেল — placeholder-এর আগের স্টাইলের মতো বড়/উজ্জ্বল করা হলো */
+  .item-card label.code-label{
+    font-size:1rem;
+    text-transform:none;
+    letter-spacing:normal;
+    font-weight:600;
+    color:#f8fafc;
+  }
   .item-card input[type=text]:focus{background:rgba(255,255,255,0.09);}
   .item-card .preview .name{color:#f8fafc;}
   .item-card .qty-btn{
@@ -203,12 +225,25 @@
   .qty-val{font-weight:700;min-width:20px;text-align:center;}
   .qty-max-msg{font-size:.7rem;color:#dc2626;}
 
-  /* ---- Add item button: always emerald, static ---- */
+  /* ---- Add item button: dashed emerald outline with icon circle ---- */
   .add-item-btn{
-    width:100%;padding:13px;border:1px solid rgba(16,185,129,0.35);border-radius:14px;
-    background:var(--ok-soft);color:#059669;font-size:.88rem;font-weight:700;cursor:pointer;margin-bottom:22px;
+    width:100%;padding:14px;border:1.5px dashed rgba(16,185,129,0.45);border-radius:14px;
+    background:var(--ok-soft);color:#059669;font-size:.9rem;font-weight:700;cursor:pointer;margin-bottom:22px;
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
-  .add-item-btn:active{transform:translateY(1px);}
+  .add-item-btn .plus-circle{
+    display:flex;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:50%;
+    background:linear-gradient(135deg,#10b981,#059669);
+    color:#ffffff;font-size:.95rem;font-weight:800;line-height:1;flex-shrink:0;
+  }
+  .add-item-btn:active{
+    transform:scale(0.98);
+    background:rgba(16,185,129,0.14);
+    border-color:rgba(16,185,129,0.7);
+    box-shadow:0 4px 12px -4px rgba(5,150,105,0.35);
+  }
 
   /* ---- Payment verification ---- */
   .otp-input{letter-spacing:.3em;text-align:center;font-weight:700;}
@@ -227,9 +262,16 @@
     cursor:pointer;
     background:var(--danger-soft);
     color:#dc2626;
-    transition:background .15s ease, border-color .15s ease, color .15s ease;
+    transition:background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
-  .pay-method-opt.selected{border-color:rgba(16,185,129,0.4);background:var(--ok-soft);color:#059669;}
+  .pay-method-opt.selected{
+    border-color:transparent;
+    background:linear-gradient(135deg,#10b981,#059669);
+    color:#ffffff;
+    box-shadow:0 6px 16px -4px rgba(5,150,105,0.5);
+    transform:scale(1.03);
+  }
+  .pay-method-opt.selected::before{content:"✓ ";}
 
   /* ---- Bill summary ---- */
   .bill-row{display:flex;justify-content:space-between;font-size:.9rem;padding:7px 0;}
@@ -330,8 +372,8 @@
 <div class="wrap" id="mainWrapper">
 
   <div class="brand">
-    <div class="glyph">⌚</div>
-    <h1>Italiano Watch</h1>
+    <div class="glyph">🛍️</div>
+    <h1>অনলাইন অর্ডার</h1>
     <div class="sub">অনলাইন অর্ডার ফর্ম</div>
   </div>
 
@@ -350,10 +392,10 @@
       <textarea id="custAddress" placeholder="সম্পূর্ণ ঠিকানা লিখুন"></textarea>
     </div>
 
-    <div class="section-title">⌚ আইটেম</div>
+    <div class="section-title">📦 আইটেম</div>
     <div class="hint" style="margin-bottom:14px;font-size:.86rem;line-height:1.5;color:#059669;font-weight:600;">আপনার পছন্দের প্রোডাক্টটি খুঁজে পেতে প্রোডাক্টের কোডটি লিখুন। সঠিক প্রোডাক্টটি পাওয়া জন্য।</div>
     <div id="itemsContainer"></div>
-    <button class="add-item-btn" id="addItemBtn">+ আরো আইটেম যোগ করুন</button>
+    <button class="add-item-btn" id="addItemBtn"><span class="plus-circle">+</span> আরো আইটেম যোগ করুন</button>
 
     <div class="section-title">📝 বিশেষ নির্দেশনা (ঐচ্ছিক)</div>
     <div class="card">
@@ -473,7 +515,7 @@
 })();
 
 // ===== রিফ্রেশ দিলে ফর্ম ডাটা যেন হারিয়ে না যায় (localStorage এ অটো-সেভ/রিস্টোর) =====
-const FORM_STORAGE_KEY = 'italiano_watch_form_draft';
+const FORM_STORAGE_KEY = 'order_form_draft';
 
 function saveFormDraft() {
   try {
@@ -615,8 +657,8 @@ function addItemCard(){
   card.id = id;
   card.innerHTML = `
     ${itemCount > 1 ? '<button class="remove-item" data-id="'+id+'">✕</button>' : ''}
-    <label>প্রোডাক্ট কোড</label>
-    <input type="text" class="code-input" placeholder="যেমন: WT01" autocomplete="off">
+    <label class="code-label">প্রোডাক্ট কোড লিখুন</label>
+    <input type="text" class="code-input" placeholder="প্রোডাক্ট কোড লিখুন" autocomplete="off">
     <div class="status" id="${id}-status"></div>
 
     <div class="preview" id="${id}-preview">
