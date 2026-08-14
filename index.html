@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <title>অর্ডার ফর্ম</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
 
   :root{
     --ink:#1e293b;
@@ -109,7 +109,7 @@
     -webkit-text-fill-color:var(--ink);
     opacity:1;
   }
-  input::placeholder, textarea::placeholder{color:#94a3b8;}
+  input::placeholder, textarea::placeholder{color:#cbd3dc;font-weight:300;}
   input:focus, textarea:focus, select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(16,185,129,0.15);background:#ffffff;}
   textarea{resize:vertical;min-height:70px;}
 
@@ -160,10 +160,11 @@
   }
   .item-card input[type=text]::placeholder{
     font-size:.72rem;
+    font-weight:300;
     text-transform:uppercase;
     letter-spacing:.06em;
-    color:#64748b;
-    -webkit-text-fill-color:#64748b;
+    color:#aab5c4;
+    -webkit-text-fill-color:#aab5c4;
     opacity:1;
   }
   /* প্রোডাক্ট কোড লেবেল — placeholder-এর আগের স্টাইলের মতো বড়/উজ্জ্বল করা হলো */
@@ -389,7 +390,7 @@
       <input type="tel" id="custPhone" placeholder="01XXXXXXXXX">
 
       <label>ডেলিভারি ঠিকানা</label>
-      <textarea id="custAddress" placeholder="সম্পূর্ণ ঠিকানা লিখুন"></textarea>
+      <textarea id="custAddress" placeholder="জেলা&#10;থানা/উপজেলা&#10;বিস্তারিত ঠিকানা" rows="4"></textarea>
     </div>
 
     <div class="section-title">📦 আইটেম</div>
