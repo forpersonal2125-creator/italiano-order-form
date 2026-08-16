@@ -802,7 +802,7 @@ function updateQtyUI(id){
   // max=1 (একদম শেষ পিচ) হলে আলাদা মেসেজ, আর ১-এর বেশি হলে সর্বোচ্চ পরিমাণের মেসেজ।
   let maxMsg = '';
   if (atMax && it.triedMax) {
-    maxMsg = (it.max === 1) ? '(আর নেই)' : 'সর্বোচ্চ এই পরিমাণ অর্ডার করা যাবে';
+    maxMsg = '(আর নেই)';
   }
   document.getElementById(id+'-maxmsg').textContent = maxMsg;
 }
