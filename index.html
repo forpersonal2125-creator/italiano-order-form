@@ -405,9 +405,9 @@
     <button class="primary-btn" id="nextBtn">পরের ধাপে যান →</button>
   </div>
 
-  <!-- ===== Page 2: ডেলিভারি পেমেন্ট যাচাই (শুধু paid delivery-তে) ===== -->
+  <!-- ===== Page 2: ডেলিভারি এলাকা নির্বাচন ===== -->
   <div id="page2" class="page">
-    <div class="section-title">💳 ডেলিভারি পেমেন্ট যাচাই</div>
+    <div class="section-title">💳 ডেলিভারি এলাকা</div>
     <div class="card">
       <label>ডেলিভারি এলাকা</label>
       <div class="area-row">
@@ -415,12 +415,7 @@
         <div class="area-opt" data-fee="150">ঢাকার বাহিরে +৳150</div>
       </div>
 
-      <div class="hint" style="margin-top:14px;">ডেলিভারি চার্জ যে মাধ্যমে পাঠিয়েছেন সেটা সিলেক্ট করুন।</div>
-      <div class="pay-method-row">
-        <div class="pay-method-opt" data-method="bKash">bKash</div>
-        <div class="pay-method-opt" data-method="Nagad">Nagad</div>
-      </div>
-      <div class="hint">ডেলিভারি চার্জ পাঠানোর পর, আপনি যে নাম্বার থেকে পাঠিয়েছেন তার শেষ ৪ সংখ্যা লিখুন।</div>
+      <div class="hint" style="margin-top:14px;">ডেলিভারি চার্জ পাঠানোর পর, আপনি যে নাম্বার থেকে পাঠিয়েছেন তার শেষ ৪ সংখ্যা লিখুন।</div>
       <label>শেষ ৪ সংখ্যা</label>
       <input type="text" class="otp-input" id="last4" maxlength="4" placeholder="XXXX">
     </div>
@@ -526,7 +521,6 @@ function saveFormDraft() {
       orderNote: document.getElementById('orderNote')?.value || '',
       last4: document.getElementById('last4')?.value || '',
       selectedZoneFee: document.querySelector('.area-opt.selected')?.dataset.fee || '100',
-      selectedPayMethod: selectedPayMethod || '',
       itemCodes: Array.from(document.querySelectorAll('.item-card .code-input')).map(inp => inp.value)
     };
     localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(draft));
@@ -549,12 +543,6 @@ function restoreFormDraft() {
   if (draft.selectedZoneFee) {
     document.querySelectorAll('.area-opt').forEach(o => {
       o.classList.toggle('selected', o.dataset.fee === draft.selectedZoneFee);
-    });
-  }
-  if (draft.selectedPayMethod) {
-    selectedPayMethod = draft.selectedPayMethod;
-    document.querySelectorAll('.pay-method-opt').forEach(o => {
-      o.classList.toggle('selected', o.dataset.method === draft.selectedPayMethod);
     });
   }
 
@@ -856,18 +844,7 @@ document.querySelectorAll('.area-opt').forEach(opt => {
   });
 });
 
-// bKash/Nagad পেমেন্ট মেথড সিলেকশন
-let selectedPayMethod = '';
-document.querySelectorAll('.pay-method-opt').forEach(opt => {
-  opt.addEventListener('click', () => {
-    document.querySelectorAll('.pay-method-opt').forEach(o => o.classList.remove('selected'));
-    opt.classList.add('selected');
-    selectedPayMethod = opt.dataset.method;
-    saveFormDraft();
-  });
-});
-
-// কাস্টমার ইনফো / নোট / last4 — প্রতি পরিবর্তনে ড্রাফট সেভ
+// কাস্টমার ইনফো / নোট — প্রতি পরিবর্তনে ড্রাফট সেভ
 ['custName','custPhone','custAddress','orderNote','last4'].forEach(fid => {
   document.getElementById(fid)?.addEventListener('input', saveFormDraft);
 });
@@ -888,12 +865,13 @@ function buildSummaryAndShowPage3() {
   const name = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
   const address = document.getElementById('custAddress').value.trim();
-  const last4 = document.getElementById('last4').value.trim();
 
   const selectedOpt = document.querySelector('.area-opt.selected');
   selectedZoneName = selectedOpt.textContent.split('+')[0].trim();
   const freeDelivery = hasFreeDeliveryItem();
   const deliveryFee = freeDelivery ? 0 : Number(selectedOpt.dataset.fee);
+
+  const last4 = document.getElementById('last4').value.trim();
 
   const validItems = Object.values(items).filter(it => it.code);
   let itemsHtml = '';
@@ -922,9 +900,7 @@ function buildSummaryAndShowPage3() {
     <div class="summary-line"><span>আইটেম মোট</span><span>৳${itemsTotal}</span></div>
     <div class="summary-line"><span>ডেলিভারি চার্জ</span><span>${freeDelivery ? '<span style="color:#059669;font-weight:700;">ফ্রী 🚚</span>' : '৳' + deliveryFee}</span></div>
     <div class="summary-line" style="font-weight:800;color:#059669;font-size:1rem;"><span>সর্বমোট</span><span>৳${grandTotal}</span></div>
-    ${!freeDelivery ? `
-    <div class="summary-line"><span>পেমেন্ট মাধ্যম</span><span>${selectedPayMethod}</span></div>
-    <div class="summary-line"><span>শেষ ৪ ডিজিট</span><span>${last4}</span></div>` : ''}
+    ${!freeDelivery ? `<div class="summary-line"><span>শেষ ৪ ডিজিট</span><span>${last4}</span></div>` : ''}
     ${note ? `<div class="summary-line"><span>নোট</span><span>${note}</span></div>` : ''}
   `;
 
@@ -932,7 +908,7 @@ function buildSummaryAndShowPage3() {
 }
 
 // Page 1 -> "পরের ধাপে যান": নাম/ফোন/ঠিকানা/আইটেম যাচাই করে, ফ্রী ডেলিভারি হলে সরাসরি Page 3 (সামারি),
-// নাহলে Page 2 (পেমেন্ট যাচাই)-এ নিয়ে যাবে
+// নাহলে Page 2 (এলাকা নির্বাচন)-এ নিয়ে যাবে
 nextBtn.addEventListener('click', () => {
   const name = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
@@ -958,15 +934,11 @@ page2BackBtn.addEventListener('click', () => {
   showPage('page1');
 });
 
-// Page 2 -> অর্ডার কনফার্ম করুন: bKash/Nagad ও শেষ ৪ ডিজিট যাচাই করে Page 3 (সামারি)-তে যাওয়া
+// Page 2 -> অর্ডার কনফার্ম করুন: শেষ ৪ ডিজিট যাচাই করে Page 3 (সামারি)-তে যাওয়া
 page2ConfirmBtn.addEventListener('click', () => {
   const last4 = document.getElementById('last4').value.trim();
 
-  let valid = true;
-  if (!selectedPayMethod) { showToast('bKash অথবা Nagad সিলেক্ট করুন।'); valid = false; }
-  if (!/^\d{4}$/.test(last4)) { showToast('সঠিক ৪ ডিজিট লিখুন।'); valid = false; }
-
-  if (!valid) return;
+  if (!/^\d{4}$/.test(last4)) { showToast('সঠিক ৪ ডিজিট লিখুন।'); return; }
 
   buildSummaryAndShowPage3();
 });
@@ -1006,7 +978,6 @@ document.getElementById('confirmBtn').addEventListener('click', async () => {
     })),
     items_total: itemsTotal,
     grand_total: grandTotal,
-    payment_method: freeDelivery ? '' : selectedPayMethod,
     payment_last4: freeDelivery ? '' : document.getElementById('last4').value.trim(),
     note: document.getElementById('orderNote').value.trim()
   };
