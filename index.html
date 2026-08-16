@@ -796,7 +796,7 @@ function updateQtyUI(id){
   const it = items[id];
   document.getElementById(id+'-qtyval').textContent = it.qty;
   const atMax = it.qty >= it.max;
-  document.getElementById(id+'-plus').disabled = atMax;
+  document.getElementById(id+'-plus').disabled = false;
   document.getElementById(id+'-minus').disabled = it.qty <= 1;
   // FIX #3: "আর স্টক নেই" মেসেজ বিভ্রান্তিকর ছিল — মনে হতো হাতে থাকা পরিমাণটাও নেই।
   // max=1 (একদম শেষ পিচ) হলে আলাদা মেসেজ, আর ১-এর বেশি হলে সর্বোচ্চ পরিমাণের মেসেজ।
