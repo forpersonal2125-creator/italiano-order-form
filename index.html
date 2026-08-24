@@ -746,18 +746,16 @@ function showProduct(id, code, p){
     priceEl.textContent = '৳' + p.price;
   }
 
+  // স্টক চেক — শুধুই stock সংখ্যা দিয়ে। availability কলামের উপর আর নির্ভর করা হয় না।
+  // stock 0 বা তার কম হলে "আউট অফ স্টক", ১ বা তার বেশি হলে "স্টকে আছে"।
   const stockWrap = document.getElementById(id+'-stock');
   const stockText = document.getElementById(id+'-stocktext');
-  const availabilityText = (p.availability || '').toString().trim().toLowerCase();
-  const isMarkedAvailable = availabilityText === 'available' || availabilityText === '';
   const stockNum = Number(p.stock) || 0;
-  const available = stockNum > 0 && isMarkedAvailable;
+  const available = stockNum > 0;
   if(available){
-    // FIX #2: কাস্টমারকে exact stock সংখ্যা দেখানো হচ্ছিল ("স্টকে আছে (৩)")।
-    // এখন শুধু "স্টকে আছে" দেখানো হচ্ছে, সংখ্যাটা internal max হিসেবে items[id].max-এ থেকে যাচ্ছে।
     stockWrap.className = 'stock in'; stockText.textContent = 'স্টকে আছে';
   } else {
-    stockWrap.className = 'stock out'; stockText.textContent = !isMarkedAvailable ? 'বর্তমানে অনুপলব্ধ' : 'আউট অফ স্টক';
+    stockWrap.className = 'stock out'; stockText.textContent = 'আউট অফ স্টক';
   }
 
   document.getElementById(id+'-preview').classList.add('show');
