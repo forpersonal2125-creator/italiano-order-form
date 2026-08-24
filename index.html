@@ -365,6 +365,8 @@
   }
   .wa-float:active{transform:scale(0.94);}
   .wa-float svg{width:29px;height:29px;}
+  /* কীবোর্ড ওপেন থাকলে JS দিয়ে bottom ভ্যালু ডাইনামিক্যালি সেট করা হয় (নিচের স্ক্রিপ্ট দ্রষ্টব্য),
+     যাতে বাটনটা কীবোর্ডের ঠিক উপরে থেকে সবসময় দেখা ও ক্লিকযোগ্য থাকে, হাইড না হয়ে যায় */
   /* page2/page3-তে নিচে ব্যাক/কনফার্ম বাটন থাকায় বাবলটা একটু উপরে তুলে দেওয়া, ওভারল্যাপ এড়াতে */
   body.has-bottom-bar .wa-float{ bottom:96px; }
 
@@ -578,9 +580,29 @@ const PAYMENT_NUMBER = '+966510981470'; // বিকাশ ও নগদ Persona
 // অনেকটা এই চ্যাট অ্যাপের ইনপুট বক্সের মতো আচরণ।
 (function () {
   const KB_SPACE_CLASS = 'kb-typing-space';
+  const waBtn = document.getElementById('whatsappFloat');
 
   function isTypingField(el){
     return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA');
+  }
+
+  function defaultWaBottom(){
+    return document.body.classList.contains('has-bottom-bar') ? 96 : 24;
+  }
+
+  // কীবোর্ডের উচ্চতা বের করে বাটনটাকে ঠিক তার উপরে বসানো — বারবার (delay দিয়ে) চেষ্টা করা হচ্ছে,
+  // কারণ webview কীবোর্ড অ্যানিমেশন শেষ হতে সময় নেয় ও visualViewport দেরিতে আপডেট হতে পারে
+  function repositionWaButton(){
+    if (!waBtn) return;
+    let kbHeight = 0;
+    if (window.visualViewport) {
+      kbHeight = Math.max(0, window.innerHeight - window.visualViewport.height);
+    }
+    if (kbHeight > 60) {
+      waBtn.style.bottom = (kbHeight + 14) + 'px';
+    } else {
+      waBtn.style.bottom = defaultWaBottom() + 'px';
+    }
   }
 
   function scrollFocusedIntoView(el) {
@@ -588,6 +610,7 @@ const PAYMENT_NUMBER = '+966510981470'; // বিকাশ ও নগদ Persona
       setTimeout(() => {
         if (document.activeElement !== el) return;
         el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        repositionWaButton();
       }, delay);
     });
   }
@@ -603,6 +626,7 @@ const PAYMENT_NUMBER = '+966510981470'; // বিকাশ ও নগদ Persona
     setTimeout(() => {
       if (!isTypingField(document.activeElement)) {
         document.body.classList.remove(KB_SPACE_CLASS);
+        if (waBtn) waBtn.style.bottom = defaultWaBottom() + 'px';
       }
     }, 150);
   });
@@ -610,6 +634,7 @@ const PAYMENT_NUMBER = '+966510981470'; // বিকাশ ও নগদ Persona
   // কিছু webview-তে visualViewport ঠিকমতো কাজ করলে সেটাও অতিরিক্ত সহায়তা হিসেবে ব্যবহার করা হচ্ছে
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', () => {
+      repositionWaButton();
       if (isTypingField(document.activeElement)) {
         scrollFocusedIntoView(document.activeElement);
       }
