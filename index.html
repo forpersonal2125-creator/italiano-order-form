@@ -760,9 +760,10 @@ function showProduct(id, code, p){
 
   document.getElementById(id+'-preview').classList.add('show');
 
-  // প্রোডাক্টের free_delivery ফিল্ড চেক করা (Sheet কলাম: free_delivery = yes/true হলে ফ্রী)
+  // প্রোডাক্টের free_delivery ফিল্ড চেক করা — শুধু "Free"/"free" লেখা থাকলেই ফ্রী ডেলিভারি,
+  // খালি বা অন্য যেকোনো কিছু থাকলে ফ্রী ডেলিভারি না।
   const freeDeliveryVal = (p.free_delivery ?? '').toString().trim().toLowerCase();
-  const isFreeDelivery = freeDeliveryVal === 'yes' || freeDeliveryVal === 'true' || freeDeliveryVal === '1';
+  const isFreeDelivery = freeDeliveryVal === 'free';
   document.getElementById(id+'-freebadge').style.display = isFreeDelivery ? 'inline-flex' : 'none';
 
   const qtyBlock = document.getElementById(id+'-qtyblock');
