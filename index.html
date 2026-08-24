@@ -33,6 +33,8 @@
   }
   *{box-sizing:border-box;}
   html{ height:100%; }
+  /* ফোকাস থাকাকালীন কীবোর্ডের নিচে স্ক্রল করার জন্য বাড়তি জায়গা (Messenger webview ফিক্স) */
+  body.kb-typing-space{ padding-bottom:55vh !important; transition:padding-bottom .1s ease; }
   body{
     margin:0;
     background:
@@ -65,6 +67,17 @@
     letter-spacing:.01em;
   }
   .brand .sub{color:#94a3b8;font-size:.82rem;letter-spacing:.04em;}
+  .brand .wa-help-note{
+    margin-top:14px;
+    padding:9px 12px;
+    border-radius:10px;
+    background:rgba(239,68,68,0.12);
+    border:1px solid rgba(239,68,68,0.3);
+    color:#fca5a5;
+    font-size:.74rem;
+    line-height:1.5;
+    font-weight:600;
+  }
 
   .section-title{
     font-family:'Fraunces', serif;
@@ -249,6 +262,35 @@
   .otp-input{letter-spacing:.3em;text-align:center;font-weight:700;}
   .hint{font-size:.76rem;color:var(--muted);margin-top:6px;}
 
+  /* ---- পেমেন্ট নাম্বার কার্ড (bKash/Nagad, কপি বাটনসহ) ---- */
+  .pay-number-box{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:rgba(16,185,129,0.07);
+    border:1px solid rgba(16,185,129,0.25);
+    border-radius:12px;
+    padding:12px 14px;
+    margin-top:6px;
+  }
+  .pay-number-box .pn-info{min-width:0;}
+  .pay-number-box .pn-number{
+    font-weight:700;font-size:1.02rem;color:var(--ink);letter-spacing:.02em;
+  }
+  .pay-number-box .pn-sub{
+    font-size:.68rem;color:var(--muted);margin-top:2px;
+  }
+  .copy-btn{
+    flex-shrink:0;
+    border:none;border-radius:10px;
+    padding:9px 14px;
+    background:linear-gradient(135deg,#10b981,#059669);
+    color:#ffffff;font-size:.78rem;font-weight:700;cursor:pointer;
+    display:flex;align-items:center;gap:5px;
+    box-shadow:0 6px 14px -6px rgba(5,150,105,0.5);
+    transition:transform .12s ease, background .15s ease;
+  }
+  .copy-btn:active{transform:scale(0.95);}
+  .copy-btn.copied{background:linear-gradient(135deg,#334155,#1e293b);}
+
   /* bKash/Nagad টগল — red default, emerald selected */
   .pay-method-row{display:flex;gap:10px;margin-top:6px;margin-bottom:16px;}
   .pay-method-opt{
@@ -306,6 +348,25 @@
   .toast-box.success{border-left-color:var(--ok);}
   .toast-icon{font-size:18px;flex-shrink:0;}
   .toast-text{font-size:.82rem;color:var(--ink);line-height:1.4;}
+
+  /* ---- WhatsApp floating help button ---- */
+  .wa-float{
+    position:fixed;
+    right:18px;
+    bottom:24px;
+    width:56px;height:56px;
+    border-radius:50%;
+    background:#25D366;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 26px -8px rgba(0,0,0,0.4);
+    z-index:150;
+    text-decoration:none;
+    transition:bottom .15s ease, transform .15s ease;
+  }
+  .wa-float:active{transform:scale(0.94);}
+  .wa-float svg{width:29px;height:29px;}
+  /* page2/page3-তে নিচে ব্যাক/কনফার্ম বাটন থাকায় বাবলটা একটু উপরে তুলে দেওয়া, ওভারল্যাপ এড়াতে */
+  body.has-bottom-bar .wa-float{ bottom:96px; }
 
   /* ---- Summary Modal ---- */
   .modal-overlay{
@@ -369,6 +430,13 @@
   </div>
 </div>
 
+<!-- ===== যেকোনো সমস্যায় সরাসরি WhatsApp-এ যোগাযোগের জন্য ফ্লোটিং বাটন =====
+     নিচে WHATSAPP_NUMBER ভ্যারিয়েবলে দেশের কোডসহ নাম্বার বসালেই বাটন কাজ করবে
+     (যেমন: 8801XXXXXXXXX বা 966XXXXXXXXX) -->
+<a href="#" id="whatsappFloat" class="wa-float" target="_blank" rel="noopener" aria-label="WhatsApp এ যোগাযোগ করুন">
+  <svg viewBox="0 0 32 32" fill="#ffffff"><path d="M16.004 3C9.377 3 4 8.373 4 15c0 2.386.7 4.607 1.908 6.47L4 29l7.72-1.87A11.94 11.94 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3zm0 21.8c-1.98 0-3.83-.55-5.41-1.5l-.39-.23-4.58 1.11 1.14-4.47-.25-.4A9.77 9.77 0 0 1 5.2 15c0-5.96 4.85-10.8 10.8-10.8S26.8 9.04 26.8 15 21.96 24.8 16.004 24.8zm5.98-8.1c-.33-.16-1.94-.96-2.24-1.07-.3-.11-.52-.16-.74.16-.22.33-.85 1.07-1.04 1.29-.19.22-.38.24-.71.08-.33-.16-1.4-.52-2.66-1.65-.98-.88-1.65-1.96-1.84-2.29-.19-.33-.02-.51.14-.67.15-.15.33-.38.5-.58.16-.19.22-.33.33-.55.11-.22.05-.41-.03-.58-.08-.16-.74-1.79-1.02-2.45-.27-.64-.54-.56-.74-.57-.19-.01-.41-.01-.63-.01-.22 0-.58.08-.88.41-.3.33-1.15 1.13-1.15 2.75s1.18 3.19 1.34 3.41c.16.22 2.32 3.55 5.63 4.98.79.34 1.4.55 1.88.7.79.25 1.51.21 2.08.13.63-.09 1.94-.79 2.22-1.56.27-.76.27-1.42.19-1.56-.08-.14-.3-.22-.63-.38z"/></svg>
+</a>
+
 <div class="wrap" id="mainWrapper">
 
   <!-- ===== Page 1: কাস্টমার তথ্য + আইটেম + নোট ===== -->
@@ -378,6 +446,7 @@
       <div class="glyph">🛍️</div>
       <h1>YOUR BRAND NAME</h1>
       <div class="sub">অনলাইন অর্ডার ফর্ম</div>
+      <div class="wa-help-note">⚠️ অর্ডারে কোনো সমস্যা হলে নিচের WhatsApp বাটনে ক্লিক করে সরাসরি যোগাযোগ করুন</div>
     </div>
 
     <div class="section-title">👤 কাস্টমার তথ্য</div>
@@ -415,7 +484,18 @@
         <div class="area-opt" data-fee="150">ঢাকার বাহিরে +৳150</div>
       </div>
 
-      <div class="hint" style="margin-top:14px;">ডেলিভারি চার্জ পাঠানোর পর, আপনি যে নাম্বার থেকে পাঠিয়েছেন তার শেষ ৪ সংখ্যা লিখুন।</div>
+      <!-- ===== পেমেন্ট নাম্বার (bKash ও Nagad — একই Personal নাম্বার), কপি বাটনসহ =====
+           নিচে PAYMENT_NUMBER ভ্যারিয়েবলে আসল নাম্বার বসালেই এখানে ও কপি বাটনে দেখাবে -->
+      <label>পেমেন্ট নাম্বার (বিকাশ ও নগদ)</label>
+      <div class="pay-number-box">
+        <div class="pn-info">
+          <div class="pn-number" id="paymentNumberText">01XXXXXXXXX</div>
+          <div class="pn-sub">Personal · বিকাশ ও নগদ উভয়েই সচল</div>
+        </div>
+        <button type="button" class="copy-btn" id="copyPaymentBtn">📋 Copy</button>
+      </div>
+
+      <div class="hint" style="margin-top:14px;">উপরের নাম্বারে ডেলিভারি চার্জ পাঠানোর পর, আপনি যে নাম্বার থেকে পাঠিয়েছেন তার শেষ ৪ সংখ্যা লিখুন।</div>
       <label>শেষ ৪ সংখ্যা</label>
       <input type="text" class="otp-input" id="last4" maxlength="4" placeholder="XXXX">
     </div>
@@ -443,70 +523,98 @@
 
 <script>
 
-// ===== FIX #1: Messenger in-app browser (webview)-এ কীবোর্ড উঠলে input field
-// কীবোর্ডের নিচে চাপা পড়ে যাচ্ছিল, কিছুই দেখা যাচ্ছিল না =====
-// কারণ: এই webview-তে কীবোর্ড ওঠার সময় visualViewport ইভেন্ট দেরিতে/অনির্ভরযোগ্যভাবে ফায়ার হয়,
-// আর page-এ কীবোর্ডের সমান extra স্ক্রল-স্পেসও থাকে না। তাই এখানে:
-// ১) কীবোর্ডের height অনুযায়ী body-র নিচে অস্থায়ী padding যোগ করা হচ্ছে, যাতে scroll করার জায়গা তৈরি হয়।
-// ২) ফোকাসের পর একাধিকবার (repeated/delayed) scrollIntoView চেষ্টা করা হচ্ছে, কারণ webview অনেক সময়
-//    ইভেন্ট দেরিতে পাঠায়।
-(function () {
-  let extraPadding = 0;
+// ===== কনফিগ: WhatsApp সাপোর্ট নাম্বার ও পেমেন্ট (bKash/Nagad) নাম্বার =====
+// এখানে আসল নাম্বার বসালেই পুরো ফর্মে (ফ্লোটিং বাটন + পেমেন্ট বক্স) আপডেট হয়ে যাবে
+const WHATSAPP_NUMBER = '+966510981470'; // দেশের কোডসহ, যেমন: '8801XXXXXXXXX' — খালি রাখলে বাটন হাইড থাকবে
+const PAYMENT_NUMBER = '+966510981470'; // বিকাশ ও নগদ Personal নাম্বার (টেস্ট)
 
-  function applyKeyboardPadding() {
-    if (!window.visualViewport) return;
-    const kbHeight = Math.max(0, window.innerHeight - window.visualViewport.height);
-    if (kbHeight > 60) {
-      extraPadding = kbHeight;
-      document.body.style.paddingBottom = (kbHeight + 40) + 'px';
-    } else {
-      extraPadding = 0;
-      document.body.style.paddingBottom = '';
+// WhatsApp ফ্লোটিং বাটন সেটআপ — নাম্বার বসানো না হলে বাটন দেখাবে না
+(function setupWhatsappFloat(){
+  const waBtn = document.getElementById('whatsappFloat');
+  if (WHATSAPP_NUMBER && WHATSAPP_NUMBER.trim()) {
+    waBtn.href = 'https://wa.me/' + WHATSAPP_NUMBER.replace(/[^0-9]/g, '');
+  } else {
+    waBtn.style.display = 'none';
+  }
+})();
+
+// পেমেন্ট নাম্বার বসানো ও কপি-টু-ক্লিপবোর্ড
+(function setupPaymentNumber(){
+  const numEl = document.getElementById('paymentNumberText');
+  const copyBtn = document.getElementById('copyPaymentBtn');
+  if (numEl) numEl.textContent = PAYMENT_NUMBER;
+
+  copyBtn?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(PAYMENT_NUMBER);
+    } catch (e) {
+      // fallback: clipboard API না থাকলে পুরনো পদ্ধতিতে কপি
+      const tmp = document.createElement('textarea');
+      tmp.value = PAYMENT_NUMBER;
+      document.body.appendChild(tmp);
+      tmp.select();
+      document.execCommand('copy');
+      document.body.removeChild(tmp);
     }
+    const originalText = copyBtn.textContent;
+    copyBtn.textContent = '✅ Copied';
+    copyBtn.classList.add('copied');
+    showToast('নাম্বার কপি হয়েছে', 'success');
+    setTimeout(() => {
+      copyBtn.textContent = originalText;
+      copyBtn.classList.remove('copied');
+    }, 1800);
+  });
+})();
+
+// ===== FIX #1: Messenger in-app browser (webview)-এ কীবোর্ড উঠলে input field
+// কীবোর্ডের নিচে চাপা পড়ে যাচ্ছিল, টাইপ করা টেক্সট দেখাই যাচ্ছিল না =====
+// কারণ: Messenger-এর webview visualViewport resize ইভেন্ট নির্ভরযোগ্যভাবে ফায়ার করে না,
+// তাই আগের fix (visualViewport-নির্ভর) এই webview-তে কাজ করছিল না।
+// নতুন পদ্ধতি: visualViewport-এর অপেক্ষা না করে, ফোকাস হওয়া মাত্রই একটা বড়, ফিক্সড
+// bottom space (৫৫vh) body-তে যোগ করা হচ্ছে — যাতে ব্রাউজার আসলে কীবোর্ডের height
+// ঠিকভাবে রিপোর্ট করুক বা না করুক, স্ক্রল করার মতো যথেষ্ট জায়গা সবসময় থাকে।
+// তারপর ফোকাসড ফিল্ডটাকে জোর করে বারবার (delay দিয়ে) ভিউয়ের মাঝখানে স্ক্রল করে আনা হচ্ছে —
+// অনেকটা এই চ্যাট অ্যাপের ইনপুট বক্সের মতো আচরণ।
+(function () {
+  const KB_SPACE_CLASS = 'kb-typing-space';
+
+  function isTypingField(el){
+    return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA');
   }
 
-  function scrollFocusedIntoView() {
-    const el = document.activeElement;
-    if (!el) return;
-    const tag = el.tagName;
-    if (tag !== 'INPUT' && tag !== 'TEXTAREA') return;
-
-    // একাধিকবার চেষ্টা করা, যেহেতু webview কীবোর্ড অ্যানিমেশন শেষ হতে দেরি করতে পারে
-    [50, 150, 300, 500, 800].forEach(delay => {
+  function scrollFocusedIntoView(el) {
+    [0, 80, 180, 320, 500, 750, 1000].forEach(delay => {
       setTimeout(() => {
         if (document.activeElement !== el) return;
-        applyKeyboardPadding();
         el.scrollIntoView({ block: 'center', behavior: 'smooth' });
       }, delay);
     });
   }
 
+  document.addEventListener('focusin', (e) => {
+    if (!isTypingField(e.target)) return;
+    document.body.classList.add(KB_SPACE_CLASS);
+    scrollFocusedIntoView(e.target);
+  });
+
+  document.addEventListener('focusout', (e) => {
+    if (!isTypingField(e.target)) return;
+    setTimeout(() => {
+      if (!isTypingField(document.activeElement)) {
+        document.body.classList.remove(KB_SPACE_CLASS);
+      }
+    }, 150);
+  });
+
+  // কিছু webview-তে visualViewport ঠিকমতো কাজ করলে সেটাও অতিরিক্ত সহায়তা হিসেবে ব্যবহার করা হচ্ছে
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', () => {
-      applyKeyboardPadding();
-      scrollFocusedIntoView();
+      if (isTypingField(document.activeElement)) {
+        scrollFocusedIntoView(document.activeElement);
+      }
     });
   }
-  // fallback: কিছু in-app webview visualViewport সাপোর্ট করে না, তখন window resize ব্যবহার
-  window.addEventListener('resize', scrollFocusedIntoView);
-
-  document.addEventListener('focusin', (e) => {
-    const tag = e.target.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA') {
-      scrollFocusedIntoView();
-    }
-  });
-
-  document.addEventListener('focusout', () => {
-    setTimeout(() => {
-      const active = document.activeElement;
-      const stillTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
-      if (!stillTyping) {
-        document.body.style.paddingBottom = '';
-        extraPadding = 0;
-      }
-    }, 200);
-  });
 })();
 
 // ===== রিফ্রেশ দিলে ফর্ম ডাটা যেন হারিয়ে না যায় (localStorage এ অটো-সেভ/রিস্টোর) =====
@@ -833,6 +941,8 @@ function showPage(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const target = document.getElementById(pageId);
   if (target) target.classList.add('active');
+  // page2/page3-তে নিচে ফিক্সড বাটন বার থাকায় WhatsApp বাবলটা উপরে সরিয়ে রাখা হয়
+  document.body.classList.toggle('has-bottom-bar', pageId === 'page2' || pageId === 'page3');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
