@@ -8,10 +8,10 @@
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
 
   :root{
-    --ink:#eafaf1;
-    --paper:#050f0a;
-    --card:#0d1f16;
-    --line:rgba(255,255,255,0.10);
+    --ink:#f2eeff;
+    --paper:#120a38;
+    --card:#1b1050;
+    --line:rgba(255,255,255,0.12);
 
     --gold:#2fe873;
     --gold-deep:#22e065;
@@ -19,17 +19,17 @@
     --gold-soft:rgba(47,232,115,0.10);
 
     --danger:#ff6b6b;
-    --danger-soft:rgba(255,107,107,0.12);
+    --danger-soft:rgba(255,107,107,0.14);
 
     --ok:#2fe873;
     --ok-soft:rgba(47,232,115,0.10);
 
-    --neutral:#12261b;
-    --neutral-line:rgba(255,255,255,0.14);
-    --muted:#8fae9c;
+    --neutral:#1f1558;
+    --neutral-line:rgba(255,255,255,0.16);
+    --muted:#b3a8e0;
 
-    --dark-panel:#081910;
-    --dark-panel-2:#0d2417;
+    --dark-panel:#160c46;
+    --dark-panel-2:#241964;
   }
   *{box-sizing:border-box;}
   html{ height:100%; }
@@ -37,10 +37,15 @@
   body.kb-typing-space{ padding-bottom:55vh !important; transition:padding-bottom .1s ease; }
   body{
     margin:0;
-    background:
-      radial-gradient(1100px 480px at 50% -100px, rgba(47,232,115,0.14), transparent 60%),
-      radial-gradient(700px 500px at 100% 100%, rgba(47,232,115,0.06), transparent 55%),
-      linear-gradient(180deg, #050f0a 0%, #030906 100%);
+    background-color:#0d0630;
+    background-image:
+      radial-gradient(rgba(255,255,255,0.55) 1px, transparent 1.6px),
+      radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1.6px),
+      radial-gradient(900px 460px at 50% -60px, rgba(124,92,255,0.30), transparent 62%),
+      linear-gradient(180deg, #17103f 0%, #0d0630 100%);
+    background-size: 130px 130px, 85px 85px, 100% 100%, 100% 100%;
+    background-position: 0 0, 42px 55px, 0 0, 0 0;
+    background-repeat: repeat, repeat, no-repeat, no-repeat;
     font-family:'Hind Siliguri', system-ui, sans-serif;
     color:var(--ink);
     padding:28px 16px 76px;
@@ -55,8 +60,8 @@
     padding:26px 18px 24px;
     border-radius:20px;
     background:linear-gradient(135deg, var(--dark-panel), var(--dark-panel-2));
-    border:1px solid rgba(47,232,115,0.18);
-    box-shadow:0 18px 44px -14px rgba(0,0,0,0.6), 0 0 40px -20px rgba(47,232,115,0.35);
+    border:1px solid rgba(124,92,255,0.28);
+    box-shadow:0 18px 44px -14px rgba(0,0,0,0.6), 0 0 40px -20px rgba(124,92,255,0.45);
   }
   .brand .glyph{font-size:2rem;filter:drop-shadow(0 2px 8px rgba(47,232,115,0.45));}
   .brand h1{
