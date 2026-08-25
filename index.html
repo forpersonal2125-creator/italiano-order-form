@@ -8,28 +8,28 @@
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
 
   :root{
-    --ink:#1e293b;
-    --paper:#eef1f6;
-    --card:#ffffff;
-    --line:#e2e8f0;
+    --ink:#eafaf1;
+    --paper:#050f0a;
+    --card:#0d1f16;
+    --line:rgba(255,255,255,0.10);
 
-    --gold:#10b981;
-    --gold-deep:#059669;
-    --gold-bright:#10b981;
-    --gold-soft:rgba(16,185,129,0.08);
+    --gold:#2fe873;
+    --gold-deep:#22e065;
+    --gold-bright:#58ffa0;
+    --gold-soft:rgba(47,232,115,0.10);
 
-    --danger:#ef4444;
-    --danger-soft:#fef2f2;
+    --danger:#ff6b6b;
+    --danger-soft:rgba(255,107,107,0.12);
 
-    --ok:#10b981;
-    --ok-soft:#ecfdf5;
+    --ok:#2fe873;
+    --ok-soft:rgba(47,232,115,0.10);
 
-    --neutral:#f8fafc;
-    --neutral-line:#e2e8f0;
-    --muted:#64748b;
+    --neutral:#12261b;
+    --neutral-line:rgba(255,255,255,0.14);
+    --muted:#8fae9c;
 
-    --dark-panel:#0f172a;
-    --dark-panel-2:#1e293b;
+    --dark-panel:#081910;
+    --dark-panel-2:#0d2417;
   }
   *{box-sizing:border-box;}
   html{ height:100%; }
@@ -38,8 +38,9 @@
   body{
     margin:0;
     background:
-      radial-gradient(1200px 500px at 50% -120px, rgba(16,185,129,0.10), transparent 60%),
-      linear-gradient(180deg, #eef1f6 0%, #e7ebf2 100%);
+      radial-gradient(1100px 480px at 50% -100px, rgba(47,232,115,0.14), transparent 60%),
+      radial-gradient(700px 500px at 100% 100%, rgba(47,232,115,0.06), transparent 55%),
+      linear-gradient(180deg, #050f0a 0%, #030906 100%);
     font-family:'Hind Siliguri', system-ui, sans-serif;
     color:var(--ink);
     padding:28px 16px 76px;
@@ -54,9 +55,10 @@
     padding:26px 18px 24px;
     border-radius:20px;
     background:linear-gradient(135deg, var(--dark-panel), var(--dark-panel-2));
-    box-shadow:0 18px 40px -14px rgba(15,23,42,0.45);
+    border:1px solid rgba(47,232,115,0.18);
+    box-shadow:0 18px 44px -14px rgba(0,0,0,0.6), 0 0 40px -20px rgba(47,232,115,0.35);
   }
-  .brand .glyph{font-size:2rem;filter:drop-shadow(0 2px 8px rgba(16,185,129,0.45));}
+  .brand .glyph{font-size:2rem;filter:drop-shadow(0 2px 8px rgba(47,232,115,0.45));}
   .brand h1{
     font-family:'Fraunces', serif;
     font-weight:700;
@@ -116,14 +118,14 @@
     border-radius:12px;
     font-size:16px;
     font-family:inherit;
-    background:#f8fafc;
+    background:var(--neutral);
     outline:none;
     color:var(--ink);
     -webkit-text-fill-color:var(--ink);
     opacity:1;
   }
-  input::placeholder, textarea::placeholder{color:#64748b;opacity:.45;font-size:14px;}
-  input:focus, textarea:focus, select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(16,185,129,0.15);background:#ffffff;}
+  input::placeholder, textarea::placeholder{color:var(--muted);opacity:.55;font-size:14px;}
+  input:focus, textarea:focus, select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(47,232,115,0.18);background:#16301f;}
   textarea{resize:vertical;min-height:70px;}
 
   /* ---- Toggle-style option buttons (area / payment): red default, emerald selected ---- */
@@ -138,14 +140,14 @@
     font-weight:600;
     cursor:pointer;
     background:var(--danger-soft);
-    color:#dc2626;
+    color:#ff6b6b;
     transition:background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
   .area-opt.selected{
     border-color:transparent;
-    background:linear-gradient(135deg,#10b981,#059669);
-    color:#ffffff;
-    box-shadow:0 6px 16px -4px rgba(5,150,105,0.5);
+    background:linear-gradient(135deg,#2fe873,#22e065);
+    color:#04150c;
+    box-shadow:0 6px 16px -4px rgba(34,224,101,0.5);
     transform:scale(1.03);
   }
   .area-opt.selected::before{content:"✓ ";}
@@ -202,60 +204,60 @@
   }
   .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
   .status.loading .dot{background:var(--gold);} .status.loading{color:var(--gold-deep);}
-  .status.ok .dot{background:var(--ok);} .status.ok{color:#059669;}
-  .status.err .dot{background:var(--danger);} .status.err{color:#dc2626;}
+  .status.ok .dot{background:var(--ok);} .status.ok{color:#22e065;}
+  .status.err .dot{background:var(--danger);} .status.err{color:#ff6b6b;}
 
   .preview{
     display:none;margin-top:13px;gap:13px;
-    background:rgba(16,185,129,0.06);
-    border-radius:14px;padding:12px;border:1px solid rgba(16,185,129,0.18);
+    background:rgba(47,232,115,0.06);
+    border-radius:14px;padding:12px;border:1px solid rgba(47,232,115,0.18);
   }
   .preview.show{display:flex;}
-  .preview img{width:72px;height:72px;object-fit:cover;border-radius:10px;background:#e2e8f0;flex-shrink:0;}
+  .preview img{width:72px;height:72px;object-fit:cover;border-radius:10px;background:#16301f;flex-shrink:0;}
   .preview .info{flex:1;min-width:0;}
   .preview .name{font-family:'Fraunces', serif;font-weight:600;font-size:.98rem;margin-bottom:4px;color:var(--ink);}
   .preview .price-row{display:flex;align-items:baseline;gap:6px;}
   .preview .price{color:var(--gold-deep);font-weight:700;font-size:.94rem;}
   .preview .old-price{text-decoration:line-through;color:#94a3b8;font-size:.76rem;}
   .preview .stock{font-size:.7rem;margin-top:6px;display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 7px;border-radius:20px;width:fit-content;}
-  .stock.in{color:#059669;background:var(--ok-soft);} .stock.out{color:#dc2626;background:var(--danger-soft);}
+  .stock.in{color:#22e065;background:var(--ok-soft);} .stock.out{color:#ff6b6b;background:var(--danger-soft);}
   .stock .dot2{width:5px;height:5px;border-radius:50%;background:currentColor;}
 
   .free-delivery-badge{
     font-size:.68rem;font-weight:700;margin-top:6px;margin-left:6px;
     display:inline-flex;align-items:center;gap:4px;
     padding:3px 9px;border-radius:20px;
-    color:#059669;background:var(--ok-soft);
-    border:1px solid rgba(16,185,129,0.3);
+    color:#22e065;background:var(--ok-soft);
+    border:1px solid rgba(47,232,115,0.3);
   }
   .free-delivery-note{
-    font-size:.72rem;color:#059669;font-weight:600;margin-top:6px;
+    font-size:.72rem;color:#22e065;font-weight:600;margin-top:6px;
   }
 
   .qty-row{display:flex;align-items:center;gap:14px;margin-top:13px;}
   .qty-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--neutral-line);background:#f8fafc;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);}
   .qty-btn:disabled{opacity:.3;cursor:not-allowed;}
   .qty-val{font-weight:700;min-width:20px;text-align:center;}
-  .qty-max-msg{font-size:.7rem;color:#dc2626;}
+  .qty-max-msg{font-size:.7rem;color:#ff6b6b;}
 
   /* ---- Add item button: dashed emerald outline with icon circle ---- */
   .add-item-btn{
-    width:100%;padding:14px;border:1.5px dashed rgba(16,185,129,0.45);border-radius:14px;
-    background:var(--ok-soft);color:#059669;font-size:.9rem;font-weight:700;cursor:pointer;margin-bottom:22px;
+    width:100%;padding:14px;border:1.5px dashed rgba(47,232,115,0.45);border-radius:14px;
+    background:var(--ok-soft);color:#22e065;font-size:.9rem;font-weight:700;cursor:pointer;margin-bottom:22px;
     display:flex;align-items:center;justify-content:center;gap:9px;
     transition:background .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
   .add-item-btn .plus-circle{
     display:flex;align-items:center;justify-content:center;
     width:22px;height:22px;border-radius:50%;
-    background:linear-gradient(135deg,#10b981,#059669);
-    color:#ffffff;font-size:.95rem;font-weight:800;line-height:1;flex-shrink:0;
+    background:linear-gradient(135deg,#2fe873,#22e065);
+    color:#04150c;font-size:.95rem;font-weight:800;line-height:1;flex-shrink:0;
   }
   .add-item-btn:active{
     transform:scale(0.98);
-    background:rgba(16,185,129,0.14);
-    border-color:rgba(16,185,129,0.7);
-    box-shadow:0 4px 12px -4px rgba(5,150,105,0.35);
+    background:rgba(47,232,115,0.14);
+    border-color:rgba(47,232,115,0.7);
+    box-shadow:0 4px 12px -4px rgba(34,224,101,0.35);
   }
 
   /* ---- Payment verification ---- */
@@ -265,8 +267,8 @@
   /* ---- পেমেন্ট নাম্বার কার্ড (bKash/Nagad, কপি বাটনসহ) ---- */
   .pay-number-box{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
-    background:rgba(16,185,129,0.07);
-    border:1px solid rgba(16,185,129,0.25);
+    background:rgba(47,232,115,0.07);
+    border:1px solid rgba(47,232,115,0.25);
     border-radius:12px;
     padding:12px 14px;
     margin-top:6px;
@@ -282,14 +284,14 @@
     flex-shrink:0;
     border:none;border-radius:10px;
     padding:9px 14px;
-    background:linear-gradient(135deg,#10b981,#059669);
-    color:#ffffff;font-size:.78rem;font-weight:700;cursor:pointer;
+    background:linear-gradient(135deg,#2fe873,#22e065);
+    color:#04150c;font-size:.78rem;font-weight:700;cursor:pointer;
     display:flex;align-items:center;gap:5px;
-    box-shadow:0 6px 14px -6px rgba(5,150,105,0.5);
+    box-shadow:0 6px 14px -6px rgba(34,224,101,0.5);
     transition:transform .12s ease, background .15s ease;
   }
   .copy-btn:active{transform:scale(0.95);}
-  .copy-btn.copied{background:linear-gradient(135deg,#334155,#1e293b);}
+  .copy-btn.copied{background:rgba(255,255,255,0.08);color:var(--ink);border:1px solid var(--neutral-line);}
 
   /* bKash/Nagad টগল — red default, emerald selected */
   .pay-method-row{display:flex;gap:10px;margin-top:6px;margin-bottom:16px;}
@@ -303,14 +305,14 @@
     font-weight:700;
     cursor:pointer;
     background:var(--danger-soft);
-    color:#dc2626;
+    color:#ff6b6b;
     transition:background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
   .pay-method-opt.selected{
     border-color:transparent;
-    background:linear-gradient(135deg,#10b981,#059669);
-    color:#ffffff;
-    box-shadow:0 6px 16px -4px rgba(5,150,105,0.5);
+    background:linear-gradient(135deg,#2fe873,#22e065);
+    color:#04150c;
+    box-shadow:0 6px 16px -4px rgba(34,224,101,0.5);
     transform:scale(1.03);
   }
   .pay-method-opt.selected::before{content:"✓ ";}
@@ -321,10 +323,10 @@
 
   .primary-btn{
     width:100%;padding:15px;border:none;border-radius:14px;
-    background:linear-gradient(135deg,#10b981,#059669);
-    color:#ffffff;
+    background:linear-gradient(135deg,#2fe873,#22e065);
+    color:#04150c;
     font-size:.95rem;font-weight:700;margin-top:20px;cursor:pointer;
-    box-shadow:0 10px 24px -10px rgba(5,150,105,0.5);
+    box-shadow:0 10px 24px -10px rgba(34,224,101,0.5);
     letter-spacing:.02em;
   }
   .primary-btn:disabled{opacity:.5;cursor:not-allowed;}
@@ -339,7 +341,7 @@
   }
   .toast-container.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .toast-box{
-    background:#ffffff;border-radius:14px;padding:13px 15px;
+    background:var(--card);border-radius:14px;padding:13px 15px;
     display:flex;align-items:center;gap:10px;
     box-shadow:0 14px 32px rgba(15,23,42,0.18);
     border:1px solid var(--line);
@@ -349,22 +351,36 @@
   .toast-icon{font-size:18px;flex-shrink:0;}
   .toast-text{font-size:.82rem;color:var(--ink);line-height:1.4;}
 
-  /* ---- WhatsApp floating help button ---- */
+  /* ---- WhatsApp floating help button, with soft pulsing glow ring ---- */
   .wa-float{
     position:fixed;
     right:18px;
     bottom:24px;
     width:56px;height:56px;
     border-radius:50%;
-    background:#25D366;
+    background:radial-gradient(circle at 35% 30%, #34e07a, #1fbf5c);
     display:flex;align-items:center;justify-content:center;
-    box-shadow:0 10px 26px -8px rgba(0,0,0,0.4);
+    box-shadow:0 10px 26px -6px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.08) inset;
     z-index:150;
     text-decoration:none;
     transition:bottom .15s ease, transform .15s ease;
   }
+  .wa-float::before, .wa-float::after{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;bottom:0;
+    border-radius:50%;
+    background:rgba(47,232,115,0.55);
+    z-index:-1;
+    animation:wa-pulse 2.2s ease-out infinite;
+  }
+  .wa-float::after{ animation-delay:1.1s; }
+  @keyframes wa-pulse{
+    0%{ transform:scale(1); opacity:.55; }
+    100%{ transform:scale(1.9); opacity:0; }
+  }
   .wa-float:active{transform:scale(0.94);}
-  .wa-float svg{width:29px;height:29px;}
+  .wa-float svg{width:29px;height:29px;position:relative;z-index:1;}
   /* কীবোর্ড ওপেন থাকলে JS দিয়ে bottom ভ্যালু ডাইনামিক্যালি সেট করা হয় (নিচের স্ক্রিপ্ট দ্রষ্টব্য),
      যাতে বাটনটা কীবোর্ডের ঠিক উপরে থেকে সবসময় দেখা ও ক্লিকযোগ্য থাকে, হাইড না হয়ে যায় */
   /* page2/page3-তে নিচে ব্যাক/কনফার্ম বাটন থাকায় বাবলটা একটু উপরে তুলে দেওয়া, ওভারল্যাপ এড়াতে */
@@ -378,7 +394,7 @@
   }
   .modal-overlay.active{display:flex;}
   .modal-box{
-    background:#ffffff;width:100%;max-width:460px;
+    background:var(--card);width:100%;max-width:460px;
     border-radius:22px 22px 0 0;padding:22px;
     max-height:85vh;overflow-y:auto;
     border-top:1px solid var(--line);
@@ -389,16 +405,16 @@
 
   /* Summary-তে প্রোডাক্ট ছবি কার্ড */
   .summary-product{
-    background:rgba(16,185,129,0.06);
+    background:rgba(47,232,115,0.06);
     border-radius:14px;
     padding:13px;
     margin-bottom:10px;
     text-align:center;
-    border:1px solid rgba(16,185,129,0.18);
+    border:1px solid rgba(47,232,115,0.18);
   }
   .summary-product img{
     width:140px;height:140px;object-fit:cover;border-radius:14px;
-    background:#e2e8f0;margin-bottom:10px;
+    background:#16301f;margin-bottom:10px;
   }
   .summary-product .sp-name{font-family:'Fraunces', serif;font-weight:700;font-size:1rem;color:var(--ink);}
   .summary-product .sp-code{font-size:.72rem;color:var(--muted);margin-top:2px;letter-spacing:.03em;}
@@ -406,8 +422,8 @@
 
   .modal-buttons{display:flex;gap:10px;margin-top:18px;}
   .modal-buttons button{flex:1;padding:13px;border-radius:12px;border:none;font-weight:700;font-size:.88rem;cursor:pointer;}
-  .btn-edit{background:#f1f5f9;color:var(--ink);border:1px solid var(--neutral-line);}
-  .btn-confirm{background:linear-gradient(135deg,#10b981,#059669);color:#ffffff;box-shadow:0 10px 24px -10px rgba(5,150,105,0.5);}
+  .btn-edit{background:rgba(255,255,255,0.06);color:var(--ink);border:1px solid var(--neutral-line);}
+  .btn-confirm{background:linear-gradient(135deg,#2fe873,#22e065);color:#04150c;box-shadow:0 10px 24px -10px rgba(34,224,101,0.5);}
   .btn-confirm:disabled{opacity:.5;cursor:not-allowed;}
 
   .success-box{text-align:center;padding:60px 20px;}
@@ -465,7 +481,7 @@
     </div>
 
     <div class="section-title">📦 আইটেম</div>
-    <div class="hint" style="margin-bottom:14px;font-size:.86rem;line-height:1.5;color:#059669;font-weight:600;">আপনার পছন্দের প্রোডাক্টটি পেতে প্রোডাক্টের কোডটি লিখুন। সঠিক প্রোডাক্টটি পাওয়া জন্য।</div>
+    <div class="hint" style="margin-bottom:14px;font-size:.86rem;line-height:1.5;color:#22e065;font-weight:600;">আপনার পছন্দের প্রোডাক্টটি পেতে প্রোডাক্টের কোডটি লিখুন। সঠিক প্রোডাক্টটি পাওয়া জন্য।</div>
     <div id="itemsContainer"></div>
     <button class="add-item-btn" id="addItemBtn"><span class="plus-circle">+</span> ADD MORE PRODUCTS </button>
 
@@ -1037,8 +1053,8 @@ function buildSummaryAndShowPage3() {
     <div class="summary-line"><span>এলাকা</span><span>${selectedZoneName}</span></div>
     <hr style="margin:10px 0;border:none;border-top:1px dashed var(--line);">
     <div class="summary-line"><span>আইটেম মোট</span><span>৳${itemsTotal}</span></div>
-    <div class="summary-line"><span>ডেলিভারি চার্জ</span><span>${freeDelivery ? '<span style="color:#059669;font-weight:700;">ফ্রী 🚚</span>' : '৳' + deliveryFee}</span></div>
-    <div class="summary-line" style="font-weight:800;color:#059669;font-size:1rem;"><span>সর্বমোট</span><span>৳${grandTotal}</span></div>
+    <div class="summary-line"><span>ডেলিভারি চার্জ</span><span>${freeDelivery ? '<span style="color:#22e065;font-weight:700;">ফ্রী 🚚</span>' : '৳' + deliveryFee}</span></div>
+    <div class="summary-line" style="font-weight:800;color:#22e065;font-size:1rem;"><span>সর্বমোট</span><span>৳${grandTotal}</span></div>
     ${!freeDelivery ? `<div class="summary-line"><span>শেষ ৪ ডিজিট</span><span>${last4}</span></div>` : ''}
     ${note ? `<div class="summary-line"><span>নোট</span><span>${note}</span></div>` : ''}
   `;
