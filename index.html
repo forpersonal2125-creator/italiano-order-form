@@ -8,28 +8,30 @@
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
 
   :root{
-    --ink:#f2eeff;
+    --ink:#241a4d;
     --paper:#120a38;
-    --card:#1b1050;
-    --line:rgba(255,255,255,0.12);
+    --card:#f8f7fc;
+    --line:rgba(36,26,77,0.12);
 
     --gold:#2fe873;
     --gold-deep:#22e065;
     --gold-bright:#58ffa0;
     --gold-soft:rgba(47,232,115,0.10);
 
-    --danger:#ff6b6b;
-    --danger-soft:rgba(255,107,107,0.14);
+    --danger:#dc2626;
+    --danger-soft:#fef2f2;
 
     --ok:#2fe873;
     --ok-soft:rgba(47,232,115,0.10);
 
-    --neutral:#1f1558;
-    --neutral-line:rgba(255,255,255,0.16);
-    --muted:#b3a8e0;
+    --neutral:#f1eef9;
+    --neutral-line:rgba(36,26,77,0.16);
+    --muted:#6b6390;
 
-    --dark-panel:#160c46;
-    --dark-panel-2:#241964;
+    --dark-panel:#f8f7fc;
+    --dark-panel-2:#eeeafa;
+
+    --ink-light:#f2eeff; /* dark starry body-এর ওপর সরাসরি বসা টেক্সটের জন্য (কার্ডের বাইরে) */
   }
   *{box-sizing:border-box;}
   html{ height:100%; }
@@ -60,27 +62,27 @@
     padding:26px 18px 24px;
     border-radius:20px;
     background:linear-gradient(135deg, var(--dark-panel), var(--dark-panel-2));
-    border:1px solid rgba(124,92,255,0.28);
-    box-shadow:0 18px 44px -14px rgba(0,0,0,0.6), 0 0 40px -20px rgba(124,92,255,0.45);
+    border:1px solid rgba(124,92,255,0.20);
+    box-shadow:0 18px 44px -14px rgba(18,10,56,0.35), 0 0 40px -22px rgba(124,92,255,0.35);
   }
-  .brand .glyph{font-size:2rem;filter:drop-shadow(0 2px 8px rgba(47,232,115,0.45));}
+  .brand .glyph{font-size:2rem;filter:drop-shadow(0 2px 8px rgba(47,232,115,0.35));}
   .brand h1{
     font-family:'Fraunces', serif;
     font-weight:700;
     font-size:1.8rem;
     margin:8px 0 3px;
-    color:#ffffff;
+    color:var(--ink);
     background:none;
     letter-spacing:.01em;
   }
-  .brand .sub{color:#94a3b8;font-size:.82rem;letter-spacing:.04em;}
+  .brand .sub{color:var(--muted);font-size:.82rem;letter-spacing:.04em;}
   .brand .wa-help-note{
     margin-top:14px;
     padding:9px 12px;
     border-radius:10px;
-    background:rgba(239,68,68,0.12);
-    border:1px solid rgba(239,68,68,0.3);
-    color:#fca5a5;
+    background:#fef2f2;
+    border:1px solid rgba(220,38,38,0.25);
+    color:#dc2626;
     font-size:.74rem;
     line-height:1.5;
     font-weight:600;
@@ -92,7 +94,7 @@
     font-size:1.05rem;
     margin:30px 0 14px;
     display:flex;align-items:center;gap:8px;
-    color:var(--ink);
+    color:var(--ink-light);
   }
   .section-title:first-of-type{margin-top:0;}
 
@@ -102,7 +104,7 @@
     border-radius:18px;
     padding:18px;
     margin-bottom:6px;
-    box-shadow:0 10px 28px -12px rgba(15,23,42,0.12);
+    box-shadow:0 14px 32px -14px rgba(18,10,56,0.5);
   }
 
   label{
@@ -130,7 +132,7 @@
     opacity:1;
   }
   input::placeholder, textarea::placeholder{color:var(--muted);opacity:.55;font-size:14px;}
-  input:focus, textarea:focus, select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(47,232,115,0.18);background:#16301f;}
+  input:focus, textarea:focus, select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(47,232,115,0.22);background:#ffffff;}
   textarea{resize:vertical;min-height:70px;}
 
   /* ---- Toggle-style option buttons (area / payment): red default, emerald selected ---- */
@@ -145,7 +147,7 @@
     font-weight:600;
     cursor:pointer;
     background:var(--danger-soft);
-    color:#ff6b6b;
+    color:#dc2626;
     transition:background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
   .area-opt.selected{
@@ -160,31 +162,31 @@
   /* ---- Item / Product section (Watch-specific) ---- */
   .item-card{
     background:linear-gradient(135deg, var(--dark-panel), var(--dark-panel-2));
-    border:1px solid rgba(255,255,255,0.08);
+    border:1px solid var(--line);
     border-radius:18px;
     padding:18px;
     margin-bottom:14px;
     position:relative;
-    box-shadow:0 18px 40px -14px rgba(15,23,42,0.45);
+    box-shadow:0 18px 40px -14px rgba(18,10,56,0.55);
   }
   .item-card .remove-item{
     position:absolute;top:12px;right:14px;
-    background:none;border:none;color:#94a3b8;font-size:1.05rem;cursor:pointer;
+    background:none;border:none;color:var(--muted);font-size:1.05rem;cursor:pointer;
   }
-  .item-card label{color:#94a3b8;}
+  .item-card label{color:var(--muted);}
   .item-card input[type=text]{
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.12);
-    color:#f8fafc;
-    -webkit-text-fill-color:#f8fafc;
+    background:var(--neutral);
+    border:1px solid var(--neutral-line);
+    color:var(--ink);
+    -webkit-text-fill-color:var(--ink);
   }
   .item-card input[type=text]::placeholder{
     font-size:.65rem;
     text-transform:uppercase;
     letter-spacing:.06em;
-    color:#cbd5e1;
-    -webkit-text-fill-color:#cbd5e1;
-    opacity:.45;
+    color:var(--muted);
+    -webkit-text-fill-color:var(--muted);
+    opacity:.7;
   }
   /* প্রোডাক্ট কোড লেবেল — placeholder-এর আগের স্টাইলের মতো বড়/উজ্জ্বল করা হলো */
   .item-card label.code-label{
@@ -192,16 +194,16 @@
     text-transform:none;
     letter-spacing:normal;
     font-weight:600;
-    color:#f8fafc;
+    color:var(--ink);
   }
-  .item-card input[type=text]:focus{background:rgba(255,255,255,0.09);}
-  .item-card .preview .name{color:#f8fafc;}
+  .item-card input[type=text]:focus{background:#ffffff;}
+  .item-card .preview .name{color:var(--ink);}
   .item-card .qty-btn{
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.14);
-    color:#f8fafc;
+    background:var(--neutral);
+    border:1px solid var(--neutral-line);
+    color:var(--ink);
   }
-  .item-card .qty-val{color:#f8fafc;}
+  .item-card .qty-val{color:var(--ink);}
 
   .status{
     font-size:.78rem;margin-top:8px;min-height:16px;
@@ -210,7 +212,7 @@
   .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
   .status.loading .dot{background:var(--gold);} .status.loading{color:var(--gold-deep);}
   .status.ok .dot{background:var(--ok);} .status.ok{color:#22e065;}
-  .status.err .dot{background:var(--danger);} .status.err{color:#ff6b6b;}
+  .status.err .dot{background:var(--danger);} .status.err{color:#dc2626;}
 
   .preview{
     display:none;margin-top:13px;gap:13px;
@@ -223,9 +225,9 @@
   .preview .name{font-family:'Fraunces', serif;font-weight:600;font-size:.98rem;margin-bottom:4px;color:var(--ink);}
   .preview .price-row{display:flex;align-items:baseline;gap:6px;}
   .preview .price{color:var(--gold-deep);font-weight:700;font-size:.94rem;}
-  .preview .old-price{text-decoration:line-through;color:#94a3b8;font-size:.76rem;}
+  .preview .old-price{text-decoration:line-through;color:var(--muted);font-size:.76rem;}
   .preview .stock{font-size:.7rem;margin-top:6px;display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 7px;border-radius:20px;width:fit-content;}
-  .stock.in{color:#22e065;background:var(--ok-soft);} .stock.out{color:#ff6b6b;background:var(--danger-soft);}
+  .stock.in{color:#22e065;background:var(--ok-soft);} .stock.out{color:#dc2626;background:var(--danger-soft);}
   .stock .dot2{width:5px;height:5px;border-radius:50%;background:currentColor;}
 
   .free-delivery-badge{
@@ -243,7 +245,7 @@
   .qty-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--neutral-line);background:#f8fafc;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);}
   .qty-btn:disabled{opacity:.3;cursor:not-allowed;}
   .qty-val{font-weight:700;min-width:20px;text-align:center;}
-  .qty-max-msg{font-size:.7rem;color:#ff6b6b;}
+  .qty-max-msg{font-size:.7rem;color:#dc2626;}
 
   /* ---- Add item button: dashed emerald outline with icon circle ---- */
   .add-item-btn{
@@ -296,7 +298,7 @@
     transition:transform .12s ease, background .15s ease;
   }
   .copy-btn:active{transform:scale(0.95);}
-  .copy-btn.copied{background:rgba(255,255,255,0.08);color:var(--ink);border:1px solid var(--neutral-line);}
+  .copy-btn.copied{background:rgba(36,26,77,0.08);color:var(--ink);border:1px solid var(--neutral-line);}
 
   /* bKash/Nagad টগল — red default, emerald selected */
   .pay-method-row{display:flex;gap:10px;margin-top:6px;margin-bottom:16px;}
@@ -310,7 +312,7 @@
     font-weight:700;
     cursor:pointer;
     background:var(--danger-soft);
-    color:#ff6b6b;
+    color:#dc2626;
     transition:background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
   .pay-method-opt.selected{
@@ -427,7 +429,7 @@
 
   .modal-buttons{display:flex;gap:10px;margin-top:18px;}
   .modal-buttons button{flex:1;padding:13px;border-radius:12px;border:none;font-weight:700;font-size:.88rem;cursor:pointer;}
-  .btn-edit{background:rgba(255,255,255,0.06);color:var(--ink);border:1px solid var(--neutral-line);}
+  .btn-edit{background:rgba(255,255,255,0.10);color:var(--ink-light);border:1px solid rgba(255,255,255,0.16);}
   .btn-confirm{background:linear-gradient(135deg,#2fe873,#22e065);color:#04150c;box-shadow:0 10px 24px -10px rgba(34,224,101,0.5);}
   .btn-confirm:disabled{opacity:.5;cursor:not-allowed;}
 
