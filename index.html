@@ -16,6 +16,8 @@
     --gold:#2fe873;
     --gold-deep:#22e065;
     --gold-bright:#58ffa0;
+    --gold-text:#c2740c;
+    --amber-soft:rgba(194,116,12,0.12);
     --gold-soft:rgba(47,232,115,0.10);
 
     --danger:#dc2626;
@@ -211,7 +213,7 @@
   }
   .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
   .status.loading .dot{background:var(--gold);} .status.loading{color:var(--gold-deep);}
-  .status.ok .dot{background:var(--ok);} .status.ok{color:#22e065;}
+  .status.ok .dot{background:var(--gold-text);} .status.ok{color:var(--gold-text);}
   .status.err .dot{background:var(--danger);} .status.err{color:#dc2626;}
 
   .preview{
@@ -224,21 +226,21 @@
   .preview .info{flex:1;min-width:0;}
   .preview .name{font-family:'Fraunces', serif;font-weight:600;font-size:.98rem;margin-bottom:4px;color:var(--ink);}
   .preview .price-row{display:flex;align-items:baseline;gap:6px;}
-  .preview .price{color:var(--gold-deep);font-weight:700;font-size:.94rem;}
+  .preview .price{color:var(--gold-text);font-weight:700;font-size:.94rem;}
   .preview .old-price{text-decoration:line-through;color:var(--muted);font-size:.76rem;}
   .preview .stock{font-size:.7rem;margin-top:6px;display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 7px;border-radius:20px;width:fit-content;}
-  .stock.in{color:#22e065;background:var(--ok-soft);} .stock.out{color:#dc2626;background:var(--danger-soft);}
+  .stock.in{color:var(--gold-text);background:var(--amber-soft);} .stock.out{color:#dc2626;background:var(--danger-soft);}
   .stock .dot2{width:5px;height:5px;border-radius:50%;background:currentColor;}
 
   .free-delivery-badge{
     font-size:.68rem;font-weight:700;margin-top:6px;margin-left:6px;
     display:inline-flex;align-items:center;gap:4px;
     padding:3px 9px;border-radius:20px;
-    color:#22e065;background:var(--ok-soft);
-    border:1px solid rgba(47,232,115,0.3);
+    color:var(--gold-text);background:var(--amber-soft);
+    border:1px solid rgba(194,116,12,0.3);
   }
   .free-delivery-note{
-    font-size:.72rem;color:#22e065;font-weight:600;margin-top:6px;
+    font-size:.72rem;color:var(--gold-text);font-weight:600;margin-top:6px;
   }
 
   .qty-row{display:flex;align-items:center;gap:14px;margin-top:13px;}
@@ -326,7 +328,7 @@
 
   /* ---- Bill summary ---- */
   .bill-row{display:flex;justify-content:space-between;font-size:.9rem;padding:7px 0;}
-  .bill-row.total{font-weight:700;font-size:1rem;border-top:1px solid var(--line);margin-top:6px;padding-top:12px;color:var(--gold-deep);}
+  .bill-row.total{font-weight:700;font-size:1rem;border-top:1px solid var(--line);margin-top:6px;padding-top:12px;color:var(--gold-text);}
 
   .primary-btn{
     width:100%;padding:15px;border:none;border-radius:14px;
@@ -425,7 +427,7 @@
   }
   .summary-product .sp-name{font-family:'Fraunces', serif;font-weight:700;font-size:1rem;color:var(--ink);}
   .summary-product .sp-code{font-size:.72rem;color:var(--muted);margin-top:2px;letter-spacing:.03em;}
-  .summary-product .sp-qty-price{font-size:.82rem;color:var(--gold-deep);font-weight:700;margin-top:6px;}
+  .summary-product .sp-qty-price{font-size:.82rem;color:var(--gold-text);font-weight:700;margin-top:6px;}
 
   .modal-buttons{display:flex;gap:10px;margin-top:18px;}
   .modal-buttons button{flex:1;padding:13px;border-radius:12px;border:none;font-weight:700;font-size:.88rem;cursor:pointer;}
@@ -1060,8 +1062,8 @@ function buildSummaryAndShowPage3() {
     <div class="summary-line"><span>এলাকা</span><span>${selectedZoneName}</span></div>
     <hr style="margin:10px 0;border:none;border-top:1px dashed var(--line);">
     <div class="summary-line"><span>আইটেম মোট</span><span>৳${itemsTotal}</span></div>
-    <div class="summary-line"><span>ডেলিভারি চার্জ</span><span>${freeDelivery ? '<span style="color:#22e065;font-weight:700;">ফ্রী 🚚</span>' : '৳' + deliveryFee}</span></div>
-    <div class="summary-line" style="font-weight:800;color:#22e065;font-size:1rem;"><span>সর্বমোট</span><span>৳${grandTotal}</span></div>
+    <div class="summary-line"><span>ডেলিভারি চার্জ</span><span>${freeDelivery ? '<span style="color:var(--gold-text);font-weight:700;">ফ্রী 🚚</span>' : '৳' + deliveryFee}</span></div>
+    <div class="summary-line" style="font-weight:800;color:var(--gold-text);font-size:1rem;"><span>সর্বমোট</span><span>৳${grandTotal}</span></div>
     ${!freeDelivery ? `<div class="summary-line"><span>শেষ ৪ ডিজিট</span><span>${last4}</span></div>` : ''}
     ${note ? `<div class="summary-line"><span>নোট</span><span>${note}</span></div>` : ''}
   `;
