@@ -1023,7 +1023,8 @@ restoreFormDraft();
   const urlCode = new URLSearchParams(window.location.search).get('code');
   if (!urlCode) return;
   const firstInput = document.querySelector('.item-card .code-input');
-  if (firstInput && !firstInput.value.trim()) {
+  if (firstInput) {
+    // URL-এর code সবসময় আগের সেভ করা draft-এর উপরে override করবে — লিংকে ক্লিক মানেই ওই নির্দিষ্ট প্রোডাক্টটা চাওয়া
     firstInput.value = urlCode;
     firstInput.dispatchEvent(new Event('input'));
   }
