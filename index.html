@@ -1016,6 +1016,19 @@ document.querySelectorAll('.area-opt').forEach(opt => {
 // প্রথম আইটেম কার্ড যোগ করা, তারপর আগের ড্রাফট থাকলে রিস্টোর করা
 addItemCard();
 restoreFormDraft();
+
+// ===== URL-এ ?code=XXX থাকলে সেই প্রোডাক্ট কোড প্রথম আইটেম কার্ডে বসিয়ে অটো-লোড করা =====
+// (কমেন্ট প্রাইভেট রিপ্লাই বা Messenger লিংক থেকে সরাসরি একটা প্রোডাক্ট নিয়ে ফর্মে আসলে)
+(function autoFillProductFromUrl(){
+  const urlCode = new URLSearchParams(window.location.search).get('code');
+  if (!urlCode) return;
+  const firstInput = document.querySelector('.item-card .code-input');
+  if (firstInput && !firstInput.value.trim()) {
+    firstInput.value = urlCode;
+    firstInput.dispatchEvent(new Event('input'));
+  }
+})();
+
 updateBill();
 
 // ===== Page navigation / Review / Confirm ফ্লো =====
