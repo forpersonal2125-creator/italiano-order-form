@@ -78,7 +78,7 @@
     letter-spacing:.01em;
   }
   .brand .sub{color:var(--muted);font-size:.82rem;letter-spacing:.04em;}
-  .brand .wa-help-note{
+  .wa-help-note{
     margin-top:14px;
     padding:9px 12px;
     border-radius:10px;
@@ -88,6 +88,10 @@
     font-size:.74rem;
     line-height:1.5;
     font-weight:600;
+  }
+  .wa-help-note.standalone{
+    margin-top:0;
+    margin-bottom:20px;
   }
 
   .section-title{
@@ -504,6 +508,7 @@
 
   <!-- ===== Page 2: ডেলিভারি এলাকা নির্বাচন ===== -->
   <div id="page2" class="page">
+    <div class="wa-help-note standalone">⚠️ অর্ডারে কোনো সমস্যা হলে নিচের WhatsApp বাটনে ক্লিক করে সরাসরি যোগাযোগ করুন</div>
     <div class="section-title">💳 ডেলিভারি এলাকা</div>
     <div class="card">
       <label>ডেলিভারি এলাকা</label>
@@ -536,6 +541,7 @@
 
   <!-- ===== Page 3: অর্ডার সামারি ===== -->
   <div id="page3" class="page">
+    <div class="wa-help-note standalone">⚠️ অর্ডারে কোনো সমস্যা হলে নিচের WhatsApp বাটনে ক্লিক করে সরাসরি যোগাযোগ করুন</div>
     <div class="section-title">📋 অর্ডার সামারি</div>
     <div class="card">
       <div id="summaryContent"></div>
@@ -1017,16 +1023,43 @@ document.querySelectorAll('.area-opt').forEach(opt => {
 addItemCard();
 restoreFormDraft();
 
-// ===== URL-এ ?code=XXX থাকলে সেই প্রোডাক্ট কোড প্রথম আইটেম কার্ডে বসিয়ে অটো-লোড করা =====
-// (কমেন্ট প্রাইভেট রিপ্লাই বা Messenger লিংক থেকে সরাসরি একটা প্রোডাক্ট নিয়ে ফর্মে আসলে)
-(function autoFillProductFromUrl(){
-  const urlCode = new URLSearchParams(window.location.search).get('code');
-  if (!urlCode) return;
+// ===== URL-এ ?code=XXX বা ?codes=CODE1,CODE2,CODE3 থাকলে সেই প্রোডাক্ট কোড(গুলো)
+// অটো-লোড করা (কমেন্ট প্রাইভেট রিপ্লাই বা Messenger লিংক থেকে সরাসরি একটা/একাধিক
+// প্রোডাক্ট নিয়ে ফর্মে আসলে) =====
+// ফরম্যাট: ?codes=WT01,WT02,WT03  (কমা দিয়ে সেপারেটেড, প্রথমটা এক্সিস্টিং কার্ডে বসবে,
+// বাকিগুলোর জন্য নতুন কার্ড অটো তৈরি হবে)
+// পুরনো সিঙ্গেল ফরম্যাট ?code=XXX ও ব্যাকওয়ার্ড কম্প্যাটিবিলিটির জন্য কাজ করবে
+(function autoFillProductsFromUrl(){
+  const params = new URLSearchParams(window.location.search);
+  const codesParam = params.get('codes');
+  const singleCode = params.get('code');
+
+  let codeList = [];
+  if (codesParam) {
+    codeList = codesParam.split(',').map(c => c.trim()).filter(Boolean);
+  } else if (singleCode) {
+    codeList = [singleCode.trim()].filter(Boolean);
+  }
+
+  if (codeList.length === 0) return;
+
+  // প্রথম কোডটা এক্সিস্টিং প্রথম কার্ডে বসানো
   const firstInput = document.querySelector('.item-card .code-input');
   if (firstInput) {
-    // URL-এর code সবসময় আগের সেভ করা draft-এর উপরে override করবে — লিংকে ক্লিক মানেই ওই নির্দিষ্ট প্রোডাক্টটা চাওয়া
-    firstInput.value = urlCode;
+    firstInput.value = codeList[0];
     firstInput.dispatchEvent(new Event('input'));
+  }
+
+  // বাকি কোডগুলোর জন্য নতুন কার্ড তৈরি করে কোড বসানো
+  for (let i = 1; i < codeList.length; i++) {
+    addItemCard();
+    const cardEls = document.querySelectorAll('.item-card');
+    const lastCard = cardEls[cardEls.length - 1];
+    const input = lastCard?.querySelector('.code-input');
+    if (input) {
+      input.value = codeList[i];
+      input.dispatchEvent(new Event('input'));
+    }
   }
 })();
 
